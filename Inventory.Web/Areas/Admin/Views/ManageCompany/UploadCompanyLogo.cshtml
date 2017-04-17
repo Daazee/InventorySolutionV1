@@ -1,0 +1,33 @@
+﻿@model Inventory.Model.CompanyLogo
+
+@{
+    ViewBag.Title = "UploadCompanyLogo";
+    Layout = "~/Views/Shared/_LayoutMenu.cshtml";
+}
+
+<h2>Upload Logo</h2>
+@using (Html.BeginForm("UploadCompanyLogo", "ManageCompany", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+
+    <div class="form-horizontal">
+        <hr />
+        @*@Html.ValidationSummary(true, "", new { @class = "text-danger" })*@
+
+        <div class="form-group">
+            <label for="image" class="control-label col-md-2">Logo</label>
+            <div>
+                <input type="file" name="image" id="image" style="max-width:250px;" class="col-md-3" />
+                @if (Model !=null && Model.Logo != null)
+                {
+                    <img src="data:image;base64,@System.Convert.ToBase64String(Model.Logo)" width="150" height="150" style="float:left;" class="col-md-3" />
+                }
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Upload" class="btn btn-default" />
+            </div>
+        </div>
+    </div>
+}

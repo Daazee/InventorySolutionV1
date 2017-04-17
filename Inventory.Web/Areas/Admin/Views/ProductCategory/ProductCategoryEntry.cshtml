@@ -1,0 +1,173 @@
+﻿@model IEnumerable<Inventory.Model.ProductCategory>
+
+@{
+    ViewBag.Title = "Product Category";
+    Layout = "~/Views/Shared/_LayoutMenu.cshtml";
+}
+
+@*<h3>Product Category</h3>*@
+@using (Html.BeginForm())
+{
+
+    	<!-- page title -->
+    <header id="page-header">
+        <h1>Product Category</h1>
+    </header>
+    <!-- /page title -->
+    <div class="form-horizontal">
+        <div id="content" class="padding-20">
+            <!-- ------ -->
+            <div class="panel panel-default">
+                <div class="panel-heading panel-heading-transparent">
+                    <strong>PRODUCT CATEGORY</strong>
+                </div>
+
+                <div class="panel-body">
+
+
+                    <fieldset>
+                        <div class="row">
+                            <div class="form-group">
+                                @Html.Label("Category", htmlAttributes: new { @class = "control-label col-md-2" })
+
+                                <div class="col-md-4">
+                                    @Html.TextBox("ProductCategoryName", "", new { @class = "form-control" })
+                                </div>
+                            </div>
+                        </div>
+
+                    </fieldset>
+
+                    <div class="form-group">
+                        <div class="col-md-offset-2 col-md-10">
+                            <input type="submit" value="Save" class="btn btn-default" id="Save" />
+                            <input type="submit" value="Clear" class="btn btn-danger" id="Clear" style="margin-left:20px;" />
+                        </div>
+                    </div>
+
+                    <div style="display:none">
+                        @Html.TextBox("Flag", "false")
+                    </div>
+                </div>
+
+                <!-- /----- -->
+
+            </div>
+
+            <div id="panel-3" class="panel panel-default">
+                <div class="panel-heading">
+                    <span class="title elipsis">
+                        <strong>PRODUCT CATEGORY LIST</strong> <!-- panel title -->
+                    </span>
+
+                    <!-- right options -->
+                    <ul class="options pull-right list-inline">
+                        <li><a href="#" class="opt panel_colapse" data-toggle="tooltip" title="Colapse" data-placement="bottom"></a></li>
+                    </ul>
+                    <!-- /right options -->
+
+                </div>
+
+                <!-- panel content -->
+                <div class="panel-body">
+
+                    <div class="table-responsive nomargin">
+                        <table class="table table-bordered table-striped table-vertical-middle table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (Model != null)
+                                {
+                                    foreach (var item in Model)
+                                    {
+                                        <tr>
+                                            <td>@Html.DisplayFor(modelItem => item.ProductCategoryName)</td>
+                                        </tr>}
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+}
+@section Scripts{
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#Save').click(function (e) {
+                e.preventDefault();
+                var ProductCategoryName = $('#ProductCategoryName').val();
+                var ProductCategory = {};
+                ProductCategory.ProductCategoryName = ProductCategoryName;
+
+                if (ProductCategoryName == "") {
+                    alert("Please enter product category");
+                    $('#ProductCategoryName').focus();
+                }
+                else {
+                    $.ajax({
+                        url: '../../api/ProductCategory/AddProductCategory',
+                        cache: false,
+                        type: 'POST',
+                        contentType: 'application/json',
+                        data: JSON.stringify(ProductCategory),
+                        success: successFunc,
+                        error: errorFunc
+                    });
+                }
+
+                function successFunc(response) {
+                    console.log(response);
+                    location.reload();
+                    alert(response);
+                }
+
+                function errorFunc(error) {
+                    //alert("Error occured");//To avoid alerting if no internet connection.
+                    console.log(error);
+                }
+                //$.ajax({
+                //    url: '../../api/ProductCategory/AddProductCategory',
+                //    cache: false,
+                //    type: 'POST',
+                //    contentType: 'application/json',
+                //    data: JSON.stringify(ProductCategory),
+                //    statusCode: {
+                //        200: successFunc,
+                //        400: validateFunc,
+                //    },
+                //    error: errorFunc
+                //});
+
+                //function successFunc(response) {
+                //    console.log(response);
+                //    alert(response);
+                //    location.reload();
+                //}
+
+                //function validateFunc(response) {
+                //    console.log(response);
+                //    alert(response.responseText.Message);
+                //}
+
+                //function errorFunc(error) {
+                //    //alert("Error occured");//To avoid alerting if no internet connection.
+                //    console.log(error);
+                //}
+            })
+
+            $('#Clear').click(function (e) {
+                e.preventDefault();
+                $('#ProductCategoryName').val('');
+
+            })
+        })
+
+    </script>
+}

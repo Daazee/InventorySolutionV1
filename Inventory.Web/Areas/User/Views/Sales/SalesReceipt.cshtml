@@ -1,0 +1,163 @@
+﻿@model Inventory.Model.Receipt
+@{
+    ViewBag.Title = "SalesReceipt";
+    Layout = "~/Views/Shared/_LayoutMenu.cshtml";
+}
+<style>
+
+</style>
+<form id="form1">
+    <div id="MyReceipt" style="width: 600px;">
+        <div style="font-size:22px;">
+            <table border="0">
+                <thead>
+                    <tr>
+                        <th colspan="4">
+
+                            <center>  @Model.CompanyDetailReceipt.First().CompanyName</center>
+</th>
+                    </tr>
+                </thead>
+                <tr>
+                    <td colspan="4">
+                        <center>  @Model.CompanyDetailReceipt.First().CompanyAddress</center>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="4">
+                        <center>  @Model.CompanyDetailReceipt.First().CompanyEmail</center>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="4">
+                        <center>  @Model.CompanyDetailReceipt.First().CompanyPhone1 , @Model.CompanyDetailReceipt.First().CompanyPhone2 </center>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="4" align="right">@DateTime.Now</td>
+                </tr>
+                @*<tr>
+                    <td colspan="4"></td>
+                </tr>
+                <tr>
+                    <td colspan="4"></td>
+                </tr>
+                <tr>
+                    <td colspan="4"></td>
+                </tr>*@
+                <tr>
+                    <td>Receipt Number</td>
+                    <td colspan="4">@Model.SalesReceipt.First().TransactionNo</td>
+                </tr>
+
+                <tr>
+                    <td>Attendant Name</td>
+                    <td colspan="4">@Model.UserReceipt.Othername</td>
+                </tr>
+            </table>
+        </div>
+        <div>
+            <table style="font-size:20px;" border="1">
+                <thead>
+                    <tr>
+                        <th>
+                            Product Name
+                        </th>
+                        <th style="text-align:right !important">
+                            Rate
+                        </th>
+                        <th style="text-align:center !important">
+                            Quantity
+                        </th>
+                        <th style="text-align:right !important">
+                            Amount
+                        </th>
+                    </tr>
+                </thead>
+                @if (Model.SalesReceipt != null)
+            {
+                double TotalCost = 0.00;               
+                foreach (var item in Model.SalesReceipt)
+                {
+                    TotalCost = TotalCost + item.TotalAmount;
+                        <tr>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.ProductDetail.ProductName)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Rate)
+                            </td>
+                            <td align="center">
+                                @Html.DisplayFor(modelItem => item.Quantity)
+                            </td>
+                            <td align="right">
+                                @Html.DisplayFor(modelItem => item.TotalAmount)
+                            </td>
+                        </tr>
+                    }
+                    //Total paid by customer
+                    <tr>
+                        <td colspan="3"><b>Amount Paid</b></td>
+                        <td align="right">
+                            <b>@Model.SalesReceipt.First().AmountPaid</b>
+
+                        </td>
+                    </tr>
+                    //Total sales amount
+                    <tr>
+
+                        <td colspan="3"><b>Total Cost</b></td>
+                        <td align="right">
+                            <b>@TotalCost</b>
+
+                        </td>
+                    </tr>
+                 
+                    //Change given to customer
+                    <tr>
+                        <td colspan="3"><b>Balance</b></td>
+                        <td align="right">
+                            <b>@(Model.SalesReceipt.First().AmountPaid - Model.SalesReceipt.First().TotalProductCostAmount)</b>
+
+                        </td>
+                    </tr>
+                }
+
+            </table>
+        </div>
+    </div>
+    <table style="margin-top:10px;" width="340">
+        <tr>
+            <td>
+                <input type="text" value="@Model.SalesReceipt.First().TransactionNo" id="TransactionNo" style="display:none" />
+            </td>
+            <td align="right">
+                <input type="submit" id="PrintReceipt" value="Print Receipt" class="btn-primary" style="width:100px" />
+            </td>
+        </tr>
+    </table>
+</form>
+
+@section Scripts{
+    <script>
+        $(document).ready(function () {
+            $('#PrintReceipt').click(function (e) {
+                e.preventDefault();
+                PrintReceipt();
+            });
+
+            function PrintReceipt() {
+                var prtContent = $('#MyReceipt').html();
+                var WinPrint = window.open(",", 'left=100,top=100,width=200,height=1200');
+                WinPrint.document.write(prtContent);
+                WinPrint.document.close();
+                WinPrint.focus();
+                WinPrint.print()
+            }
+
+        })
+
+    </script>
+}
+

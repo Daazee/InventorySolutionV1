@@ -1,0 +1,195 @@
+﻿@using Inventory.BLL
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+    <title>@ViewBag.Title - Inventory</title>
+    <meta name="description" content="" />
+    @*<meta name="Author" content="Dorin Grigoras [www.stepofweb.com]" />*@
+
+    <!-- mobile settings -->
+    <meta name="viewport" content="width=device-width, maximum-scale=1, initial-scale=1, user-scalable=0" />
+
+    <!-- WEB FONTS -->
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,700,800&amp;subset=latin,latin-ext,cyrillic,cyrillic-ext" rel="stylesheet" type="text/css" />
+    <!-- CORE CSS -->
+    <link href="~/assets/plugins/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+
+    <!-- THEME CSS -->
+    <link href="~/assets/css/essentials.css" rel="stylesheet" type="text/css" />
+    <link href="~/assets/css/layout.css" rel="stylesheet" type="text/css" />
+    <link href="~/assets/css/color_scheme/green.css" rel="stylesheet" type="text/css" id="color_scheme" />
+
+    @*@Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")*@
+
+</head>
+<body>
+    <div id="wrapper" class="clearfix">
+        <aside id="aside">
+            <nav id="sideNav">
+                <!-- MAIN MENU -->
+                <ul class="nav nav-list">
+                    <li class="active">
+                        <!-- dashboard -->
+                        <a class="dashboard" href="index.html">
+                            <!-- warning - url used by default by ajax (if eneabled) -->
+                            <i class="main-icon fa fa-dashboard"></i> <span>Dashboard</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="../Admin/ProductCategory/ProductCategoryEntry">
+                            <i class="main-icon fa fa-table"></i> <span>Product Category</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#">
+                            <i class="main-icon fa fa-table"></i> <span>Product Entry</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#">
+                            <i class="main-icon fa fa-table"></i> <span>Sales Transaction</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#">
+                            <i class="fa fa-menu-arrow pull-right"></i>
+                            <i class="main-icon fa fa-pencil-square-o"></i> <span>Stock</span>
+                        </a>
+                        <ul>
+                            <!-- submenus -->
+                            <li><a href="form-elements.html">Stock Entry</a></li>
+                            <li><a href="form-masked-inputs.html">Stock Level</a></li>
+                            <li><a href="form-pickers.html">Stock History</a></li>
+                        </ul>
+                    </li>
+                    <li>
+                        <a href="#">
+                            <i class="fa fa-menu-arrow pull-right"></i>
+                            <i class="main-icon fa fa-gears"></i> <span>Print</span>
+                        </a>
+                        <ul>
+                            <!-- submenus -->
+                            <li><a href="ui-portlets.html">Receipt</a></li>
+                            <li><a href="ui-buttons.html">Sales Report</a></li>
+                        </ul>
+                    </li>
+                    <li>
+                        <a href="#">
+                            <i class="fa fa-menu-arrow pull-right"></i>
+                            <i class="main-icon fa fa-bar-chart-o"></i> <span>Settings</span>
+                        </a>
+                        <ul>
+                            <!-- submenus -->
+                            <li><a href="graphs-inline.html">Users</a></li>
+                            <li><a href="graphs-chartjs.html">Company Setup</a></li>
+                            <li><a href="graphs-chartjs.html">Upload Company Logo</a></li>
+                        </ul>
+                    </li>
+                    <li>
+                        @*<a href="../../Security/Access/Logout">*@
+                            <a href="@Url.Action("Logout", "Logout", new { Controller = "Access", Area = "Security" })>
+                            <i class="main-icon fa fa-power-off"></i> <span>Logout</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+
+            <span id="asidebg"><!-- aside fixed background --></span>
+        </aside>
+        <!-- /ASIDE -->
+        <!-- HEADER -->
+        <header id="header">
+
+            <!-- Mobile Button -->
+            <button id="mobileMenuBtn"></button>
+
+            <!-- Logo -->
+            <span class="logo pull-left" style="margin-right:20px;">
+                @*<img src="~/assets/images/logo_light.png" alt="admin panel" height="35" />*@
+                @{
+                    CompanyLogoBs companyLogoBs = new CompanyLogoBs();
+                    var CompanyLogoResult = companyLogoBs.GetCompanyLogo();
+                    if (CompanyLogoResult != null && CompanyLogoResult.Logo != null)
+                    {
+                        <img src="data:image;base64,@System.Convert.ToBase64String(CompanyLogoResult.Logo)" width="50" height="50" style="float:left; margin-right:10px;" />
+                    }
+                    else
+                    {
+                        <img src="~/Images/CompanyLogo.jpg" width="100" height="50" style="float:left; color:#fff; margin-right:10px;" alt="Logo Here" />
+                    }
+                }
+
+                @if (Session["CompanyName"] != null)
+                {
+                    Session["CompanyName"].ToString();
+                }
+            </span>
+
+            @*<form method="get" action="page-search.html" class="search pull-left hidden-xs">
+                <input type="text" class="form-control" name="k" placeholder="Search for something..." />
+            </form>*@
+
+            <nav>
+
+                <!-- OPTIONS LIST -->
+                <ul class="nav pull-right">
+
+                    <!-- USER OPTIONS -->
+                    <li class="dropdown pull-left">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" data-close-others="true">
+                            <img class="user-avatar" alt="" src="~/assets/images/noavatar.jpg" height="34" />
+                            <span class="user-name">
+                                @try
+                                {
+                                    <span class="hidden-xs">
+                                        @Session["Username"].ToString() <i class="fa fa-angle-down"></i>
+                                    </span>
+                                }
+                                catch (Exception ex)
+                                {
+                                    <span class="hidden-xs">
+                                   User Not loggedin <i class="fa fa-angle-down"></i>
+                                    </span>
+                                }
+                            </span>
+                        </a>
+                        <ul class="dropdown-menu hold-on-click">
+                            <li>
+                                <!-- settings -->
+                                <a href="page-user-profile.html"><i class="fa fa-cogs"></i> Settings</a>
+                            </li>
+                            <li class="divider"></li>
+                            <li>
+                                <!-- logout -->
+                                <a href="page-login.html"><i class="fa fa-power-off"></i> Log Out</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <!-- /USER OPTIONS -->
+
+                </ul>
+                <!-- /OPTIONS LIST -->
+
+            </nav>
+
+        </header>
+        <!-- /HEADER -->
+        <section id="middle">
+                @RenderBody()
+                <hr />
+                <footer class="padding-20">
+                    <p>&copy; @DateTime.Now.Year - My ASP.NET Application</p>
+                </footer>
+        </section>
+        </div>
+        @Scripts.Render("~/bundles/jquery")
+        @Scripts.Render("~/bundles/bootstrap")
+        @RenderSection("scripts", required: false)
+        <script type="text/javascript">var plugin_path = '../../assets/plugins/';</script>
+        <script type="text/javascript" src="~/assets/plugins/jquery/jquery-2.1.4.min.js"></script>
+        <script type="text/javascript" src="~/assets/js/app.js"></script>
+</body>
+</html>

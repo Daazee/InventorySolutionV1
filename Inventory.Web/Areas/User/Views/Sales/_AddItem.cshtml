@@ -1,0 +1,110 @@
+﻿@model Inventory.Model.Sales
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+    <div class="form-horizontal" role="form">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+
+                    <div class="form-group">
+                        @Html.Label("Product Category", htmlAttributes: new { @class = "control-label col-md-4" })
+                        <div class="col-md-8">
+                            @Html.DropDownList("ProductCategoryID", (IEnumerable<SelectListItem>)ViewBag.ProudctCategory, "Select", new { @class = "form-control" })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        @Html.Label("Product Name", htmlAttributes: new { @class = "control-label col-md-4" })
+                        <div class="col-md-8">
+                            @*@Html.DropDownList("ProductDetailID", (IEnumerable<SelectListItem>)ViewBag.ProudctName, "Select", new { @class = "form-control" })*@
+                            @*@Html.DropDownList("ProductDetailID")*@
+                            <select id="ProductDetailID" name="ProductDetailID" class = "form-control" >
+                                <option value="">Select</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                       <label class="control-label col-md-4">Current Stock Level</label>
+                        <div class="col-md-8">
+                            <input type="text" id="StockLevel" name="StockLevel" value="" class="form-control" disabled="disabled" />
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Quantity, htmlAttributes: new { @class = "control-label col-md-4" })
+                        <div class="col-md-8">
+                            @Html.TextBoxFor(model => model.Quantity,  new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.Quantity, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Rate, htmlAttributes: new { @class = "control-label col-md-4" })
+                        <div class="col-md-8">
+                            @Html.TextBoxFor(model => model.Rate,  new { @class = "form-control", disabled = "disabled" })
+                            @Html.ValidationMessageFor(model => model.Rate, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                  
+
+                    <div class="form-group">
+                        <div class="col-md-offset-4 col-md-8">
+                            <span class="btn btn-primary" id="AddItem" style="margin-right:10px;">Add Product</span>
+                            @*<input type="submit" value="Make Sales" class="btn btn-default" id="Save" />*@
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    @*<div class="container">*@
+                    <div class="table-responsive">
+                        <table class="table table-striped table-bordered table-hover" id="TableItem" style="width:400px !important">
+                            <thead>
+                                <tr><th colspan="10">Added Product(s)</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <th style="width:100px !important; display:none">
+                                        Product Category ID
+                                    </th>
+                                    <th style="width:100px !important; display:none">
+                                        Product Detail ID
+                                    </th>
+
+                                    <th style="width:100px !important">
+                                       Product Category
+                                    </th>
+                                    <th style="width:100px !important">
+                                        Product Name
+                                    </th>
+                                    <th style="width:30px !important">
+                                        Rate
+                                    </th>
+                                    <th style="width:10px !important">
+                                        @Html.DisplayNameFor(model => model.Quantity)
+                                    </th>
+                                    <th style="width:30px !important">
+                                        @Html.DisplayNameFor(model => model.TotalAmount)
+                                    </th>
+                                    <th>
+
+                                    </th>
+                                </tr>
+                            </tbody>
+
+                        </table>
+                        <table>
+                            <tr><td colspan="6" style="width:290px !important"><label id="totalLabel"></label></td><td><label id="totalAmt" style="width:30px !important"></label></td></tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+
+

@@ -1,0 +1,60 @@
+﻿@model IEnumerable<Inventory.Model.StockHistory>
+
+@{
+    ViewBag.Title = "StockHistory";
+    Layout = "~/Views/Shared/_LayoutMenu.cshtml";
+}
+
+<h2>Stock History</h2>
+
+<div class="container">
+    <div class="table-responsive">
+        <table class="table table-striped table-bordered table-hover">
+            <thead style="color:blueviolet;">
+                <tr>
+                    <th>
+                      Date
+                    </th>
+                    <th>
+                        Product Category
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.ProductDetailID)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.UnitAsAtDelievery)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.UnitReceived)
+                    </th>
+                </tr>
+            </thead>
+
+            @if (Model != null)
+            {
+                foreach (var item in Model)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.CreatedOn)
+                        </td>
+
+                        <td>
+                            @Html.DisplayFor(modelItem => item.ProductDetail.ProductCategory.ProductCategoryName)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.ProductDetail.ProductName)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.UnitAsAtDelievery)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.UnitReceived)
+                        </td>
+                    </tr>
+                }
+            }
+
+        </table>
+    </div>
+</div>

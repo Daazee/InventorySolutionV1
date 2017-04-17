@@ -1,0 +1,106 @@
+﻿@using Inventory.BLL
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - Inventory</title>
+    @Styles.Render("~/Content/css")
+    <link href="~/Content/simple-sidebar.css" rel="stylesheet" />
+    <style>
+        .icon-sidebar-margin-right {
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar navbar-inverse navbar-fixed-top">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                @{
+                    CompanyLogoBs companyLogoBs = new CompanyLogoBs();
+                    var CompanyLogoResult = companyLogoBs.GetCompanyLogo();
+                    if (CompanyLogoResult != null && CompanyLogoResult.Logo != null)
+                    {
+                            <img src="data:image;base64,@System.Convert.ToBase64String(CompanyLogoResult.Logo)" width="50" height="50" style="float:left; margin-right:10px;" />
+                    }
+                    else
+                    {
+                        <img src="~/Images/CompanyLogo.jpg" width="100" height="50" style="float:left; color:#fff; margin-right:10px;" alt="Logo Here" />
+                    }
+                }
+                @if (Session["CompanyName"] != null)
+                {
+                    @Html.ActionLink(Session["CompanyName"].ToString(), "Index", "Home", new { area = "" }, new { @class = "navbar-brand", @style="text-transform: capitalize;" })
+                }
+                else
+                {
+                    @Html.ActionLink("Inventory", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
+                }
+            </div>
+            <div class="navbar-collapse collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    @if (Session["Username"] != null)
+                    {
+                        <li>@Html.ActionLink("Welcome " + @Session["Username"].ToString(), "", new { controller = "", area = "" })</li>
+                    }
+                    <li>@Html.ActionLink("Logout", "Logout", new { Controller = "Access", Area = "Security" })</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div id="wrapper">
+        <!-- Sidebar -->
+        <div id="sidebar-wrapper">
+            <ul class="sidebar-nav">
+                @*<li class="sidebar-brand">@Html.ActionLink("Dashboard", "Dashboard", new { Controller = "Settings", Area = "Admin" })</li>*@
+
+                <li>@Html.ActionLink("Dashboard", "Dashboard", new { Controller = "Settings", Area = "Admin" })</li>
+
+                <li>@Html.ActionLink("Product Category", "ProductCategoryEntry", new { Controller = "ProductCategory", Area = "Admin" })</li>
+
+                <li>@Html.ActionLink("Product Entry", "ProductEntry", new { Controller = "ProductDetail", Area = "Admin" })</li>
+
+                <li>@Html.ActionLink("Sales Transaction", "SalesEntry", new { Controller = "Sales", Area = "User" })</li>
+
+                <li>@Html.ActionLink("Stock Entry", "StockEntry", new { Controller = "Stock", Area = "Admin" })</li>
+
+                <li>@Html.ActionLink("Stock Level", "StockLevel", new { Controller = "Stock", Area = "Admin" })</li>
+
+                <li>@Html.ActionLink("Stock History", "StockHistory", new { Controller = "Stock", Area = "Admin" })</li>
+
+                <li>@Html.ActionLink("Print Receipt", "PrintReceipt", new { Controller = "Sales", Area = "User" })</li>
+
+                <li>@Html.ActionLink("Print Sales Report", "SalesReport", new { Controller = "Report", Area = "User" })</li>
+
+                <li>@Html.ActionLink("Users", "ListUsers", new { Controller = "ManageUser", Area = "Admin" })</li>
+
+                <li>@Html.ActionLink("Company Setup", "CompanyRegistration", new { Controller = "ManageCompany", Area = "Admin" })</li>
+
+                <li>@Html.ActionLink("Upload Company Logo", "UploadCompanyLogo", new { Controller = "ManageCompany", Area = "Admin" })</li>
+                @*<li>
+                        <a href="#"><i class="glyphicon glyphicon-barcode icon-sidebar-margin-right"></i> Services</a>
+                    </li>*@
+                <li>@Html.ActionLink("Logout", "Logout", new { Controller = "Access", Area = "Security" })</li>
+            </ul>
+        </div>
+        <!-- /#sidebar-wrapper -->
+
+        <div class="container body-content">
+            @RenderBody()
+            <hr />
+            <footer>
+                <p>&copy; @DateTime.Now.Year -  DeeProg</p>
+            </footer>
+        </div>
+    </div>
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+    @RenderSection("scripts", required: false)
+</body>
+</html>

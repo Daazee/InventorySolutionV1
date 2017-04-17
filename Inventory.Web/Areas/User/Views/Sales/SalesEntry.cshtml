@@ -1,0 +1,517 @@
+﻿@model Inventory.Model.Sales
+
+@{
+    ViewBag.Title = "Sales Entry";
+    Layout = "~/Views/Shared/_LayoutMenu.cshtml";
+}
+
+<h3>Sales Entry</h3>
+
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-horizontal" role="form">
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+        @if (ViewData["Message"] != null && ViewData["Message"].ToString() != "")
+                {
+            <div class="alert alert-dismissable alert-danger" style="margin-top:3px;">
+                @ViewData["Message"]
+            </div>
+        }
+        <div class="container">
+            <div class="bg-success" id="message">
+            </div>
+        </div>
+        @Html.Partial("_AddItem")
+
+        <hr />
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.TransactionNo, htmlAttributes: new { @class = "control-label col-md-4" })
+                        <div class="col-md-8">
+                            @Html.TextBoxFor(model => model.TransactionNo, new { @class = "form-control", disabled = "disabled" })
+                            @Html.ValidationMessageFor(model => model.TransactionNo, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                </div>
+                <div class="col-md-6">
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.AmountPaid, htmlAttributes: new { @class = "control-label col-md-2" })
+                        <div class="col-md-10">
+                            @Html.TextBoxFor(model => model.AmountPaid, new { @class = "form-control", style = "width: 100px !important; float:left; margin-right:5px;" })
+                            <label for="Balance" class="control-label col-md-2">Balance</label>
+                            @*@Html.TextBoxFor(model => model.AmountPaid, new { @class = "form-control", disabled = "disabled", style = "width: 100px !important; float:left; margin-right:30px;" })*@
+                            <input type="text" id="Balance" name="Balance" class="form-control" disabled="disabled" , style="width: 100px !important; float:left; margin-right:30px;" />
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-md-offset-2 col-md-10">
+                    <input type="submit" value="Make Sales" class="btn btn-default" id="Save" />
+                    <a href='@Url.Action("PrintReceipt")' class="btn btn-default" id="Print" style="margin-left:20px;">Print Receipt</a>
+                    <input type="submit" value="Clear" class="btn btn-danger" id="clear" style="margin-left:20px;" />
+
+                </div>
+            </div>
+        </div>
+        <!-- Main form closure-->
+    </div>
+}
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+
+            $('#ProductCategoryID').change(function () {
+                $('#ProductDetailID').empty();
+                if($('#ProductCategoryID').val() != ""){
+                    $('#ProductDetailID')
+                    .append('<option value="">' + "Select" + '</option>')
+                     GetProductByCategory($('#ProductCategoryID').val());
+                
+                }
+               
+            });
+
+            $('#ProductDetailID').change(function () {
+                $('#Rate').val("0.00");
+                $('#Quantity').val('');
+                if ($('#ProductDetailID').val() != "") {
+                    GetPrice();
+                    GetStockLevel();
+                }
+            });
+
+            //$('#Quantity').blur(function () {
+            //    $("#Amount").val("");
+            //    if ($('#Quantity').val() != "" && $('#Rate').val() != "0.00") {
+            //        if ($.isNumeric($("#Quantity").val())) {
+            //            GetCost();
+            //        }
+            //        else {
+            //            alert("Quantity must be numeric");
+            //            $('#Quantity').focus()
+            //        }
+            //    }
+            //});
+
+
+            function GetPrice() {
+                var ProductDetailID = $('#ProductDetailID').val();
+                $.ajax({
+                    url: '../../api/ProductDetail/GetPrice',
+                    cache: false,
+                    type: 'GET',
+                    contentType: 'application/json',
+                    data: {
+                        ProductDetailID: ProductDetailID
+                    },
+                    success: successFunc,
+                    error: errorFunc
+                });
+
+                function successFunc(response) {
+                    console.log(response);
+                    $('#Rate').val(response);
+                }
+
+                function errorFunc(error) {
+                    console.log(error);
+                }
+            }
+
+
+            function GetStockLevel() {
+                var ProductDetailID = $('#ProductDetailID').val();
+                $.ajax({
+                    url: '../../api/Stock/GetStockLevel',
+                    cache: false,
+                    type: 'GET',
+                    contentType: 'application/json',
+                    data: {
+                        ProductDetailID: ProductDetailID
+                    },
+                    success: successFunc,
+                    error: errorFunc
+                });
+
+                function successFunc(response) {
+                    console.log(response);
+                    $('#StockLevel').val(response);
+                }
+
+                function errorFunc(error) {
+                    console.log(error);
+                }
+            }
+
+
+            $('#AddItem').click(function () {
+                var Category = $("#ProductCategoryID :selected").text();
+                var ProductName = $('#ProductDetailID :selected').text();
+
+                var ProductCategoryID = $("#ProductCategoryID").val();
+                var ProductDetailID = $('#ProductDetailID').val();
+                var StockLevel = $('#StockLevel').val();
+                var Rate = $('#Rate').val();
+                var Quantity = $('#Quantity').val();
+                var Amount = Number(Rate) * Number(Quantity);
+                var Colour = $("#Colour :selected").text();
+
+                if (ProductCategoryID == "") {
+                    alert("Please select a category")
+                    $('#message').text("Please select a category");
+                    $("#ProductCategoryID").focus();
+                }
+
+               else if (ProductDetailID == "") {
+                    alert("Please select a product")
+                    $('#message').text("Please select a product");
+                    $('#ProductDetailID').focus();
+                }
+                else if(StockLevel ==""){
+                    alert("Stock Level must not be empty")
+                    $('#message').text("Stock Level must not be empty");
+                }
+                else if (StockLevel == 0) {
+                    alert("There is no product in stock")
+                    $('#message').text("There is no product in stock");
+                }
+                else if (Quantity == "") {
+                    alert("Quantity must not be empty")
+                    $('#message').text("Quantity must not be empty");
+                    $('#Quantity').focus();
+                }
+                else if (Quantity != "" && !$.isNumeric(Quantity)) {
+                    alert("Quantity must be numeric");
+                    $('#StockLevel').focus();
+                }
+                else if (Number(Quantity) < 0) {
+                    alert("Quantity must be greater than zero")
+                    $('#message').text("Quantity must be greater than zero");
+                    $('#Quantity').focus();
+                }
+                else if (Number(Quantity)  > Number(StockLevel) ){
+                    alert("Quantity willing to purchase is greater than number of product in stock")
+                    $('#message').text("Quantity willing to purchase is greater than number of product in stock");
+                }
+                else {
+                    var totalRowCount = $("#TableItem tr").length;
+                    var rowCount = $("#TableItem td").closest("tr").length;
+
+                    var currentRow = totalRowCount - 1
+                    var newRow = currentRow + 1
+
+                    var newRec = [];
+                    newRec["Category"] = Category
+                    newRec["ProductName"] = ProductName
+
+                    newRec["CategoryID"] = ProductCategoryID
+                    newRec["ProductID"] = ProductDetailID
+
+                    newRec["UniPri"] = Rate
+                    newRec["Qty"] = Quantity
+                    newRec["Amt"] = Amount
+
+                    newRecRow = "<tr id='" + newRow + "' class='myRow'> <td style='display:none'><label id='CategoryID" + newRow + "' class='CategoryID'>" + newRec["CategoryID"] + "</label></td><td style='display:none'><label id='ProductID" + newRow + "' class='ProductID'>" + newRec["ProductID"] + "</label></td><td><label id='Category" + newRow + "' class='Category'>" + newRec["Category"] + "</label></td><td><label id='ProductName" + newRow + "'>" + newRec["ProductName"] + "</label></td><td><label id='UniPri" + newRow + "' id='UniPri'>" + newRec["UniPri"] + "</label></td><td><label id='Qty" + newRow + "'>" + newRec["Qty"] + "</label></td><td><label id='Amt" + newRow + "' class='Amt'>" + newRec["Amt"] + "</label></td><td><button id='rem" + newRow + "' class='btn btn-danger btn-sm rem'>Remove Item</button></td></tr>";
+
+                    $("#TableItem tbody").append(newRecRow);
+                    totalItemsAmount();
+                    clearItem();
+                    $('#message').text(''); //clear error message
+                }
+            })
+
+            function CurrentDataToDb(category, productName, rate, quantity, totalAmount, headerDetail) {
+                var self = this;
+
+                var amountPaid = $('#AmountPaid').val();
+                var totalProductCostAmount = $("#totalAmt").text();
+
+                self.ProductCategoryID = category;
+                self.ProductDetailID = productName;
+                self.Rate = rate;
+                self.Quantity = quantity;
+                self.totalAmount = totalAmount;
+
+                self.AmountPaid = amountPaid;
+                self.totalProductCostAmount = totalProductCostAmount;
+                self.HeaderDetail = headerDetail;
+            }
+
+
+            $('#Save').click(function (e) {
+                e.preventDefault();
+                var totalRowCount = $("#TableItem tr").length;
+                var determineFirstRecord = 1;
+                if (totalRowCount > 2) {
+
+                    if ($("#AmountPaid").val() == "") {
+                        alert("Please enter amount paid");
+                        $('#AmountPaid').focus();
+                    }
+                    else if (!$.isNumeric($("#AmountPaid").val())) {
+                        $('#AmountPaid').focus();
+                    }
+                    else if (Number($('#totalAmt').text()) > Number($("#AmountPaid").val())) {
+                        $('#message').text("Payment is less than cost of meal");
+                        $("#AmountPaid").focus();
+                    }
+                    else {
+                        var r = confirm("Are you sure you want to SAVE transaction");
+                        if (r) {
+
+                          
+                            $("#TableItem  tr").each(function (i, row) {
+                                if (i > 1) {
+                                    var headerDetail = ""
+                                    if (i == 2) {
+                                        headerDetail="H"
+                                    }
+                                    else {
+                                        headerDetail = "D"
+                                    }
+
+
+                                    console.log((row))
+                                    var tdFirst = $(this).find("td").eq(0).html();
+
+                                    var productCatID = $(this).find("td").eq(0).find("label").text();
+                                    var productDetID = $(this).find("td").eq(1).find("label").text();
+
+                                    GetProductCategoryByName($(this).find("td").eq(2).find("label").text());
+                                    GetProductByName($(this).find("td").eq(3).find("label").text());
+                                    var rate = $(this).find("td").eq(4).find("label").text();
+                                    var quantity = $(this).find("td").eq(5).find("label").text();
+                                    var totalAmount = $(this).find("td").eq(6).find("label").text();
+
+                                    var request = new CurrentDataToDb(productCatID, productDetID, rate, quantity, totalAmount, headerDetail);
+                                    $.ajax({
+                                        url: '@Url.Action("MakeSales", new { Controller="Sales", Area= "User" })',
+                                        dataType: 'json',
+                                        contentType: "application/json",
+                                        type: "POST",
+                                        data: JSON.stringify(request),
+                                        success: function (response) {
+                                            $('#message').text("Record save successfully");
+                                            $('#TransactionNo').val(response.transNo);
+                                            $('#MyTrNo').val(response.transNo);
+                                        }
+                                    });
+                                    //headerDetail = "D"
+
+
+                                }
+
+                            })
+                        }
+                        else {
+                            return false;
+                        }
+                    }
+                }
+                else {
+                    alert("Please add product saving before saving");
+                }
+            });
+
+            function totalItemsAmount() {
+                var totalRowCount = $("#TableItem tr").length;
+                var totalAmount = 0;
+
+                var sum = 0;
+                var count = 0
+                $('#totalAmt').text("0");
+                $('.Amt').each(function (index, element) {
+                    totalAmount += Number($(this).text());
+                    $('#totalAmt').text(totalAmount);
+                    $('#totalLabel').text("Total Amount to be paid");
+                });
+
+            }
+
+
+            function clearItem() {
+                $("#ProductCategoryID").val("");
+                //$('#ProductDetailID').val("0.00");
+                $('#ProductDetailID').empty();
+                $('#ProductDetailID')
+                .append('<option value="">' + "Select" + '</option>')
+                $('#Quantity').val("");
+                $('#Amount').val("");
+                $('#Rate').val("");
+                $('#StockLevel').val("");
+            }
+
+            $("#TableItem").on('click', '.rem', function () {
+                $(this).closest('tr').remove();
+                totalItemsAmount()
+            });
+
+            $('#clear').click(function (e) {
+                e.preventDefault(); // This will never let the form to load
+                var confirmRequest = confirm("Are you sure you want to clear data?");
+                if (confirmRequest) {
+                    // return true;
+                    ClearAll();
+                }
+                else {
+                    //return false;
+                }
+            });
+
+            $('#AmountPaid').blur(function () {
+                $('#message').text("");
+                $("#Balance").val("");
+                if ($('#AmountPaid').val() != "") {
+                    if ($('#totalAmt').text() != "") {
+                        if ($.isNumeric($("#AmountPaid").val())) {
+                            var totalAmount = Number($('#totalAmt').text());
+                            if (totalAmount > Number($("#AmountPaid").val())) {
+                                $('#message').text("Payment is less than cost of meal");
+                                $("#AmountPaid").focus();
+                            }
+                            else {
+                                var bal = Number($("#AmountPaid").val()) - totalAmount
+                                $("#Balance").val(bal);
+
+                            }
+
+                        }
+                        else {
+                            alert("Amount paid must be numeric");
+                            $('#AmountPaid').focus();
+                        }
+                    }
+                    else {
+                        $("#AmountPaid").val('');
+                        alert("Please ensure that you have added product");
+                    }
+                }
+            });
+        });
+
+        function confirmSaveAction() {
+            var r = confirm("Are you sure you want to SAVE transaction");
+            if (r) {
+                return true;
+            }
+            else {
+                return false;
+            }
+
+        }
+
+        function GetProductCategoryByName(name) {
+            $.ajax({
+                url: '../../api/ProductCategory/GetProductCategoryByName',
+                cache: false,
+                type: 'GET',
+                contentType: 'application/json',
+                data: {
+                    name: name
+                },
+                success: successFunc,
+                error: errorFunc
+            });
+
+            function successFunc(response) {
+                console.log(response);
+            }
+
+            function errorFunc(error) {
+                console.log(error);
+            }
+        }
+
+        function GetProductByName(name) {
+            $.ajax({
+                url: '../../api/ProductDetail/GetProductByName',
+                cache: false,
+                type: 'GET',
+                contentType: 'application/json',
+                data: {
+                    name: name
+                },
+                success: successFunc,
+                error: errorFunc
+            });
+
+            function successFunc(response) {
+                console.log(response);
+            }
+
+            function errorFunc(error) {
+                console.log(error);
+            }
+        }
+
+
+        function GetProductByCategory(ProductCategoryID) {
+            $.ajax({
+                url: '../../admin/ProductDetail/GetProductsByCategoryID',
+                //url: '../../api/ProductDetail/GetProductsByCategoryID',
+                cache: false,
+                type: 'GET',
+                contentType: 'application/json',
+                data: {
+                    ProductCategoryID: ProductCategoryID
+                },
+                success: successFunc,
+                error: errorFunc
+            });
+
+            function successFunc(response) {
+               // console.log(response);
+                for(var i=0; i<=response.length -1 ; i++){
+                    $('#ProductDetailID')
+           .append('<option value=' + response[i].ProductDetailID + '>' +
+                     response[i].ProductName + '</option>')
+                    console.log('ID: ' + response[i].ProductDetailID + ' Name: ' + response[i].ProductName)
+                }
+
+             
+            }
+
+            function errorFunc(error) {
+                console.log(error);
+            }
+        }
+
+        function ClearAll() {
+            $("#ClothCode").val("");
+            $('#UnitPrice').val("0.00");
+            $('#Quantity').val("");
+            $('#Amount').val("");
+            $('#Colour').val("");
+            $('#TransactionNo').val("");
+            $('#CustomerTag').val("");
+            $('#CustomerName').val("");
+            $('#Address').val("");
+            $('#LaundryType').val("");
+            $("#PaymentMode").val("");
+            $("#radPartPayment").prop("checked", false);
+            $("#radFullPayment").prop("checked", false);
+            $("#CustomerPhone").val("");
+            $('#AmountPaid').val("");
+            $("#Balance").val("");
+            $("#totalAmt").text("");
+            $("#totalLabel").text("");
+            $('#ExpressAmount').val('0.00');
+            $('#ExpressAmount').hide();
+            $('#message').text("");
+            $("#TableItem  tr").remove(".myRow"); //Remove all row from a table with class myRow
+        }
+    </script>
+}
+
+

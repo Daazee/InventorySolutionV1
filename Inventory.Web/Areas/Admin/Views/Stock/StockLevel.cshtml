@@ -1,0 +1,48 @@
+﻿@model IEnumerable<Inventory.Model.Stock>
+@{
+    ViewBag.Title = "Stock Level";
+    Layout = "~/Views/Shared/_LayoutMenu.cshtml";
+}
+
+<h2>Stock Level</h2>
+
+<div class="container">
+    <div class="table-responsive">
+        <table class="table table-striped table-bordered table-hover">
+            <thead style="color:blueviolet;">
+                <tr>
+                    <th>
+                        Product Category
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.ProductDetailID)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.StockLevel)
+                    </th>
+                </tr>
+            </thead>
+
+            @if (Model != null)
+            {
+                foreach (var item in Model)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.ProductDetail.ProductCategory.ProductCategoryName)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.ProductDetail.ProductName)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.StockLevel)
+                        </td>
+                       
+                    </tr>
+                }
+            }
+
+        </table>
+    </div>
+</div>
+

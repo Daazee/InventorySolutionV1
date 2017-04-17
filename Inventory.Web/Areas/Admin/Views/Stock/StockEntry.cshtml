@@ -1,0 +1,220 @@
+﻿@model IEnumerable<Inventory.Model.Stock>
+
+@{
+    ViewBag.Title = "StockEntry";
+    Layout = "~/Views/Shared/_LayoutMenu.cshtml";
+}
+
+<h3>Stock Entry</h3>
+
+@using (Html.BeginForm())
+{
+    <div class="form-horizontal">
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+        <div class="container">
+            <div class="text-success">
+                @if (ViewData["Message"] != null && ViewData["Message"].ToString() != "")
+                {
+                    @ViewData["Message"];
+                }
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="bg-success" id="message">
+            </div>
+        </div>
+        <br />
+        <div class="form-horizontal" role="form">
+            <div class="container">
+                <div class="row">
+
+                    <div class="form-group">
+                        @Html.Label("Product Category", htmlAttributes: new { @class = "control-label col-md-2" })
+                        <div class="col-md-10">
+                            @Html.DropDownList("ProductCategoryID", (IEnumerable<SelectListItem>)ViewBag.ProudctCategory, "Select", new { @class = "form-control" })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        @Html.Label("Product Name", htmlAttributes: new { @class = "control-label col-md-2" })
+                        <div class="col-md-10">
+                            @Html.DropDownList("ProductDetailID", (IEnumerable<SelectListItem>)ViewBag.ProudctName, "Select", new { @class = "form-control" })
+                            @*@Html.DropDownList("ProductDetailID",  "Select",  new { @class = "form-control" })*@
+                            @*<select id="ProductDetailID" name="ProductDetailID" class="form-control">
+                                <option value="">Select</option>
+                            </select>*@
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.Label("Unit Supplied", htmlAttributes: new { @class = "control-label col-md-2" })
+                        <div class="col-md-10">
+                            @Html.TextBox("StockLevel", "", new { @class = "form-control" })
+                        </div>
+                    </div>
+
+                </div>
+                <div class="form-group">
+                    <div class="col-md-offset-2 col-md-10">
+                        <input type="submit" value="Save" class="btn btn-default" id="Save" />
+                        <input type="submit" value="Clear" class="btn btn-danger" id="Clear" style="margin-left:20px;" />
+                    </div>
+                </div>
+                <div style="display:none">
+                    @Html.TextBox("Flag", "false")
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+}
+
+
+<div class="container">
+    <div class="table-responsive">
+        <table class="table table-striped table-bordered table-hover">
+            <thead style="color:blueviolet;">
+                <tr>
+                    <th>
+                        Product Category
+                    </th>
+                    <th>
+                        @*@Html.DisplayNameFor(model => model.ProductDetailID)*@
+                        Product Name
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.StockLevel)
+                    </th>
+                    <th></th>
+                </tr>
+            </thead>
+
+            @if (Model != null)
+            {
+                foreach (var item in Model)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.ProductDetail.ProductCategory.ProductCategoryName)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.ProductDetail.ProductName)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.StockLevel)
+                        </td>
+                        <td>
+                            <a href="" id="Delete" name="Delete">Delete</a>
+                        </td>
+                    </tr>
+                }
+            }
+
+        </table>
+    </div>
+</div>
+@section Scripts{
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#Save').click(function (e) {
+                e.preventDefault();
+                var ProductCategoryID = $('#ProductCategoryID').val();
+                var ProductDetailID = $('#ProductDetailID').val();
+                var StockLevel = $('#StockLevel').val();
+
+                var Stock = {};
+                Stock.ProductCategoryID = ProductCategoryID;
+                Stock.ProductDetailID = ProductDetailID;
+                Stock.StockLevel = StockLevel;
+
+                if (ProductCategoryID == "") {
+                    alert("Please select product category");
+                    $('#ProductCategoryID').focus();
+                }
+                else if (ProductDetailID == "") {
+                    alert("Please select product name");
+                    $('#ProductDetailID').focus();
+                }
+                else if (StockLevel == "") {
+                    alert("Please enter unit supplied");
+                    $('#StockLevel').focus();
+                }
+                else if (StockLevel != "" && !$.isNumeric(StockLevel)) {
+                    alert("Unit supplied must be numeric");
+                    $('#StockLevel').focus();
+                }
+                else if (Number(StockLevel) < 0) {
+                    alert("Unit supplied must be greater than zero")
+                    $('#StockLevel').focus();
+                }
+                else {
+                    $.ajax({
+                        url: '../../api/Stock/StockEntry',
+                        cache: false,
+                        type: 'POST',
+                        contentType: 'application/json',
+                        data: JSON.stringify(Stock),
+                        success: successFunc,
+                        error: errorFunc
+                    });
+                }
+
+                function successFunc(response) {
+                    console.log(response);
+                    alert(response);
+                    location.reload()
+                }
+
+                function errorFunc(error) {
+                    //alert("Error occured");//To avoid alerting if no internet connection.
+                    console.log(error);
+                }
+            })
+
+            $('#ProductCategoryID').change(function () {
+                var ProductCategoryID = $('#ProductCategoryID').val();
+                $.ajax({
+                    url: '../../api/ProductDetail/GetProductsByCategoryID',
+                    cache: false,
+                    type: 'GET',
+                    contentType: 'application/json',
+                    data: {
+                        ProductCategoryID: ProductCategoryID
+                    },
+                    success: successFunc,
+                    error: errorFunc
+                });
+
+                function successFunc(response) {
+                    console.log(response[id]);
+                    for (var i = 0; i <= response.length - 1; i++) {
+                        console.log(i)
+                        $('#ProductDetailID')
+                       .append('<option value=' + response[i].ProductDetailID + '>' +
+                         response[i].ProductName + '</option>')
+
+                    }
+
+                }
+
+            //    function errorFunc(error) {
+            //        //alert("Error occured");//To avoid alerting if no internet connection.
+            //        console.log(error);
+            //    }
+
+            })
+
+
+            $('#Clear').click(function (e) {
+                e.preventDefault();
+                $('#ProductCategoryID').val('');
+                $('#ProductDetailID').val('');
+                $('#StockLevel').val('');
+
+            })
+        })
+
+    </script>
+}

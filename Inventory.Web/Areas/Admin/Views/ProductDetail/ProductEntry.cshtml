@@ -1,0 +1,226 @@
+﻿@model IEnumerable<Inventory.Model.ProductDetail>
+
+@{
+    ViewBag.Title = "Product Entry";
+    Layout = "~/Views/Shared/_LayoutMenu.cshtml";
+}
+
+<h2>Product Entry</h2>
+@using (Html.BeginForm())
+{
+    <div class="form-horizontal">
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+        <div class="container">
+            <div class="text-success">
+                @if (ViewData["Message"] != null && ViewData["Message"].ToString() != "")
+                {
+                    @ViewData["Message"];
+                }
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="bg-success" id="message">
+            </div>
+        </div>
+        <br />
+        <div class="form-horizontal" role="form">
+            <div class="container">
+                <div class="row">
+
+                    <div class="form-group">
+                        @Html.Label("Product Category", htmlAttributes: new { @class = "control-label col-md-2" })
+                        <div class="col-md-10">
+                            @Html.DropDownList("ProductCategoryID", (IEnumerable<SelectListItem>)ViewBag.ProudctCategory, "Select", new { @class = "form-control" })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        @Html.Label("Product Name", htmlAttributes: new { @class = "control-label col-md-2" })
+                        <div class="col-md-10">
+                            @Html.TextBox("ProductName", "", new { @class = "form-control" })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        @Html.Label("Price", htmlAttributes: new { @class = "control-label col-md-2" })
+                        <div class="col-md-10">
+                            @Html.TextBox("Price", "", new { @class = "form-control" })
+                        </div>
+                    </div>
+
+                </div>
+                <div class="form-group">
+                    <div class="col-md-offset-2 col-md-10">
+                        <input type="submit" value="Save" class="btn btn-default" id="Save" />
+                        <input type="submit" value="Clear" class="btn btn-danger" id="Clear" style="margin-left:20px;" />
+                    </div>
+                </div>
+                <div style="display:none">
+                    @Html.TextBox("Flag", "false")
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+}
+
+
+<div class="container">
+    <div class="table-responsive">
+        <table class="table table-striped table-bordered table-hover" id="searchresult">
+            <thead style="color:blueviolet;">
+                <tr>
+                    <th>
+                        @*@Html.DisplayNameFor(model => model.ProductCategoryID)*@
+                        Product Category
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.ProductName)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Price)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.CreatedBy)
+                    </th>
+                    <th>
+                        Created On
+                    </th>
+                    <th> </th>
+                </tr>
+            </thead>
+
+            @if (Model != null)
+            {
+                foreach (var item in Model)
+                {
+                    <tr>
+                        <td>
+                            @*@Html.DisplayFor(modelItem => item.ProductCategoryID)*@
+                            @Html.DisplayFor(modelItem => item.ProductCategory.ProductCategoryName)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.ProductName)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Price)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.CreatedBy)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.KeyDate)
+                        </td>
+                        <td>
+                            <a href="@item.ProductDetailID" id="Delete" name="Delete" class="btn btn-danger deleteProduct">Delete</a>
+                        </td>
+                    </tr>
+                }
+            }
+
+        </table>
+    </div>
+</div>
+@section Scripts{
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#Save').click(function (e) {
+                e.preventDefault();
+                var ProductDetail = {};
+
+                var ProductCategoryID = $('#ProductCategoryID').val();
+                var ProductName = $('#ProductName').val();
+                var Price = $('#Price').val();
+
+                ProductDetail.ProductCategoryID = ProductCategoryID;
+                ProductDetail.ProductName = ProductName;
+                ProductDetail.Price = Price;
+
+                if (ProductCategoryID == "") {
+                    alert("Please select product category");
+                    $('#ProductCategoryID').focus();
+                }
+                else if (ProductName == "") {
+                    alert("Please enter product name");
+                    $('#ProductName').focus();
+                }
+                else if (Price == "") {
+                    alert("Please enter product price");
+                    $('#Price').focus();
+                }
+                else if (Price != "" && !$.isNumeric(Price)) {
+                    alert("Price must be numeric");
+                    $('#Price').focus();
+                }
+                else {
+                    $.ajax({
+                        url: '../../api/ProductDetail/AddProduct',
+                        cache: false,
+                        type: 'POST',
+                        contentType: 'application/json',
+                        data: JSON.stringify(ProductDetail),
+                        success: successFunc,
+                        error: errorFunc
+                    });
+                }
+
+                function successFunc(response) {
+                    console.log(response);
+                    alert(response);
+                    location.reload();
+                }
+
+                function errorFunc(error) {
+                    //alert("Error occured");//To avoid alerting if no internet connection.
+                    console.log(error);
+                }
+            })
+
+            $('#Clear').click(function (e) {
+                e.preventDefault();
+                $('#ProductCategoryID').val('');
+                $('#ProductName').val('');
+                $('#Price').val('');
+
+            })
+
+            $('.deleteProduct').click(function (e) {
+                var id = $(this).attr('id');
+                if (id == 'Delete')
+                {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    var ProductDetailID = $(this).attr("href");
+                }
+                var r = confirm("Are you sure you want to delete product");
+                if (r) {
+                    $.ajax({
+                        url: '../../api/ProductDetail/DeleteProduct',
+                        cache: false,
+                        type: 'GET',
+                        contentType: 'application/json',
+                        data: {
+                            ProductDetailID: ProductDetailID
+                        },
+                        success: successFunc,
+                        error: errorFunc
+                    });
+
+                    function successFunc(response) {
+                        console.log(response);
+                        location.reload();
+                    }
+
+                    function errorFunc(error) {
+                        //alert("Error occured");//To avoid alerting if no internet connection.
+                        console.log(error);
+                    }
+                }
+            })
+        })
+
+    </script>
+}
