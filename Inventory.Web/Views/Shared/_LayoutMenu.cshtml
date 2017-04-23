@@ -39,17 +39,17 @@
                         </a>
                     </li>
                     <li>
-                        <a href="../Admin/ProductCategory/ProductCategoryEntry">
-                            <i class="main-icon fa fa-table"></i> <span>Product Category</span>
-                        </a>
-                    </li>
+                        <a href="@Url.Action("ProductCategoryEntry", "ProductCategory", new { Area = "Admin" })">
+                                <i class="main-icon fa fa-table"></i> <span>Product Category</span>
+                            </a>
+</li>
                     <li>
-                        <a href="#">
-                            <i class="main-icon fa fa-table"></i> <span>Product Entry</span>
-                        </a>
-                    </li>
+                        <a href="@Url.Action("ProductEntry", "ProductDetail", new { Area = "Admin" })">
+                                <i class="main-icon fa fa-table"></i> <span>Product Entry</span>
+                            </a>
+</li>
                     <li>
-                        <a href="#">
+                        <a href="@Url.Action("SalesEntry", "Sales", new { Area = "User" })">
                             <i class="main-icon fa fa-table"></i> <span>Sales Transaction</span>
                         </a>
                     </li>
@@ -60,9 +60,9 @@
                         </a>
                         <ul>
                             <!-- submenus -->
-                            <li><a href="form-elements.html">Stock Entry</a></li>
-                            <li><a href="form-masked-inputs.html">Stock Level</a></li>
-                            <li><a href="form-pickers.html">Stock History</a></li>
+                            <li><a href="@Url.Action("StockEntry", "Stock", new { Area = "Admin" })">Stock Entry</a></li>
+                            <li><a href="@Url.Action("StockLevel", "Stock", new { Area = "Admin" })">Stock Level</a></li>
+                            <li><a href="@Url.Action("StockHistory", "Stock", new { Area = "Admin" })">Stock History</a></li>
                         </ul>
                     </li>
                     <li>
@@ -72,8 +72,8 @@
                         </a>
                         <ul>
                             <!-- submenus -->
-                            <li><a href="ui-portlets.html">Receipt</a></li>
-                            <li><a href="ui-buttons.html">Sales Report</a></li>
+                            <li><a href="@Url.Action("PrintReceipt", "Sales", new { Area = "User" })">Receipt</a></li>
+                            <li><a href="@Url.Action("SalesReport", "Report", new { Area = "User" })">Sales Report</a></li>
                         </ul>
                     </li>
                     <li>
@@ -83,14 +83,13 @@
                         </a>
                         <ul>
                             <!-- submenus -->
-                            <li><a href="graphs-inline.html">Users</a></li>
-                            <li><a href="graphs-chartjs.html">Company Setup</a></li>
-                            <li><a href="graphs-chartjs.html">Upload Company Logo</a></li>
+                            <li><a href="@Url.Action("ListUsers", "ManageUsers", new { Area = "Admin" })">Users</a></li>
+                            <li><a href="@Url.Action("CompanyRegistration", "ManageCompany", new { Area = "Admin" })">Company Setup</a></li>
+                            <li><a href="@Url.Action("UploadCompanyLogo", "ManageCompany", new { Area = "Admin" })">Upload Company Logo</a></li>
                         </ul>
                     </li>
                     <li>
-                        @*<a href="../../Security/Access/Logout">*@
-                            <a href="@Url.Action("Logout", "Logout", new { Controller = "Access", Area = "Security" })>
+                            <a href="@Url.Action("Logout", "Access", new { Area = "Security" })">
                             <i class="main-icon fa fa-power-off"></i> <span>Logout</span>
                         </a>
                     </li>
