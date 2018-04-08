@@ -67,7 +67,9 @@
                     <!-- /right options -->
 
                 </div>
-
+                <div id="loader" style="display:none">
+                    <img src="~/Images/Loading_icon.gif" />
+                </div>
                 <!-- panel content -->
                 <div class="panel-body">
 
@@ -167,6 +169,14 @@
                 $('#ProductCategoryName').val('');
 
             })
+
+            $(document).ajaxStart(function () {
+                $("#loader").css("display", "block");
+            });
+
+            $(document).ajaxComplete(function () {
+                $("#loader").css("display", "none");
+            });
         })
 
     </script>
