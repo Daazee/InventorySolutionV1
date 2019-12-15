@@ -22,7 +22,7 @@
     <link href="~/assets/css/color_scheme/green.css" rel="stylesheet" type="text/css" id="color_scheme" />
 
     @*@Styles.Render("~/Content/css")
-    @Scripts.Render("~/bundles/modernizr")*@
+        @Scripts.Render("~/bundles/modernizr")*@
 
 </head>
 <body>
@@ -40,14 +40,14 @@
                     </li>
                     <li>
                         <a href="@Url.Action("ProductCategoryEntry", "ProductCategory", new { Area = "Admin" })">
-                                <i class="main-icon fa fa-table"></i> <span>Product Category</span>
-                            </a>
-</li>
+                            <i class="main-icon fa fa-table"></i> <span>Product Category</span>
+                        </a>
+                    </li>
                     <li>
                         <a href="@Url.Action("ProductEntry", "ProductDetail", new { Area = "Admin" })">
-                                <i class="main-icon fa fa-table"></i> <span>Product Entry</span>
-                            </a>
-</li>
+                            <i class="main-icon fa fa-table"></i> <span>Product Entry</span>
+                        </a>
+                    </li>
                     <li>
                         <a href="@Url.Action("SalesEntry", "Sales", new { Area = "User" })">
                             <i class="main-icon fa fa-table"></i> <span>Sales Transaction</span>
@@ -89,7 +89,7 @@
                         </ul>
                     </li>
                     <li>
-                            <a href="@Url.Action("Logout", "Access", new { Area = "Security" })">
+                        <a href="@Url.Action("Logout", "Access", new { Area = "Security" })">
                             <i class="main-icon fa fa-power-off"></i> <span>Logout</span>
                         </a>
                     </li>
@@ -128,8 +128,8 @@
             </span>
 
             @*<form method="get" action="page-search.html" class="search pull-left hidden-xs">
-                <input type="text" class="form-control" name="k" placeholder="Search for something..." />
-            </form>*@
+                    <input type="text" class="form-control" name="k" placeholder="Search for something..." />
+                </form>*@
 
             <nav>
 
@@ -150,7 +150,7 @@
                                 catch (Exception ex)
                                 {
                                     <span class="hidden-xs">
-                                   User Not loggedin <i class="fa fa-angle-down"></i>
+                                        User Not loggedin <i class="fa fa-angle-down"></i>
                                     </span>
                                 }
                             </span>
@@ -177,18 +177,27 @@
         </header>
         <!-- /HEADER -->
         <section id="middle">
-                @RenderBody()
-                <hr />
-                <footer class="padding-20">
-                    <p>&copy; @DateTime.Now.Year - My ASP.NET Application</p>
-                </footer>
+            @RenderBody()
+            <hr />
+            <footer class="padding-20">
+                <p>
+                    &copy; @DateTime.Now.Year -  @if (Session["CompanyName"] != null)
+                    {
+                        <span>
+                            @Session["CompanyName"].ToString()
+                        </span>
+                    }
+                    else
+                    { <span> Company Name </span>}
+                </p>
+            </footer>
         </section>
-        </div>
-        @Scripts.Render("~/bundles/jquery")
-        @Scripts.Render("~/bundles/bootstrap")
-        @RenderSection("scripts", required: false)
-        <script type="text/javascript">var plugin_path = '../../assets/plugins/';</script>
-        <script type="text/javascript" src="~/assets/plugins/jquery/jquery-2.1.4.min.js"></script>
-        <script type="text/javascript" src="~/assets/js/app.js"></script>
+    </div>
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+    @RenderSection("scripts", required: false)
+    <script type="text/javascript">var plugin_path = '../../assets/plugins/';</script>
+    <script type="text/javascript" src="~/assets/plugins/jquery/jquery-2.1.4.min.js"></script>
+    <script type="text/javascript" src="~/assets/js/app.js"></script>
 </body>
 </html>
