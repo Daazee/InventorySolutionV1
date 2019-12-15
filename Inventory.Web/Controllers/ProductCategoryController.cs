@@ -38,6 +38,9 @@ namespace Inventory.Web.Controllers
             ProductCategoryObj.CreatedBy = "admin";
             ProductCategoryObj.KeyDate = DateTime.Today;
             ProductCategoryObj.Flag = "A";
+            var category = productCategoryBs.GetProductCategoryByName(ProductCategoryObj.ProductCategoryName);
+            if (category != null)
+                return Ok("Product category already exist");
             productCategoryBs.Insert(ProductCategoryObj);
             message = "Product category save successfully";       
             return Ok(message);
