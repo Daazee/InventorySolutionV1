@@ -105,14 +105,16 @@
             $('#Save').click(function (e) {
                 e.preventDefault();
                 var ProductCategoryName = $('#ProductCategoryName').val();
-                var ProductCategory = {};
-                ProductCategory.ProductCategoryName = ProductCategoryName;
-
                 if (ProductCategoryName == "") {
                     alert("Please enter product category");
                     $('#ProductCategoryName').focus();
+                    return;
                 }
-                else {
+                var con = confirm("Are you sure you want to add this category");
+                if (con) {
+               
+                var ProductCategory = {};
+                ProductCategory.ProductCategoryName = ProductCategoryName;               
                     $.ajax({
                         url: '../../api/ProductCategory/AddProductCategory',
                         cache: false,
