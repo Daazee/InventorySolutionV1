@@ -35,8 +35,9 @@ namespace Inventory.BLL
         {
             var ProductCategoryExist = NewProductCategoryDA.GetById(ProductCategoryBsObj.ProductCategoryID);
             ProductCategoryExist.ProductCategoryName = ProductCategoryBsObj.ProductCategoryName;
-            //ProductCategoryExist.ProductCategoryID = ProductCategoryBsObj.ProductCategoryID;
             ProductCategoryExist.Flag = ProductCategoryBsObj.Flag;
+            ProductCategoryExist.ModifiedBy = ProductCategoryBsObj.ModifiedBy;
+            ProductCategoryExist.ModifiedOn = ProductCategoryBsObj.ModifiedOn;
             NewProductCategoryDA.Update(ProductCategoryExist);
         }
     }

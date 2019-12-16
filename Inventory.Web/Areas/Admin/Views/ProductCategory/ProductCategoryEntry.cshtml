@@ -9,7 +9,7 @@
 @using (Html.BeginForm())
 {
 
-    	<!-- page title -->
+    <!-- page title -->
     <header id="page-header">
         <h1>Product Category</h1>
     </header>
@@ -46,7 +46,8 @@
                     </div>
 
                     <div style="display:none">
-                        @Html.TextBox("Flag", "false")
+                        @Html.TextBox("Flag", "A")
+                        @Html.TextBox("ProductCategoryId")
                     </div>
                 </div>
 
@@ -74,8 +75,8 @@
 
                 </div>
                 @*<div id="loader" style="display:none">
-                <img src="~/Images/Loading_icon.gif" />
-            </div>*@
+                        <img src="~/Images/Loading_icon.gif" />
+                    </div>*@
                 <!-- panel content -->
                 <div class="panel-body">
 
@@ -84,6 +85,7 @@
                             <thead>
                                 <tr>
                                     <th>Name</th>
+                                    <th></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -93,6 +95,9 @@
                                     {
                                         <tr>
                                             <td>@Html.DisplayFor(modelItem => item.ProductCategoryName)</td>
+                                            <td>
+                                                <a href="@item.ProductCategoryID" id="Edit" name="Edit" class="btn btn-primary editCategory">Edit</a>
+                                            </td>
                                         </tr>}
                                 }
                             </tbody>
@@ -110,23 +115,41 @@
         $(document).ready(function () {
             $('#Save').click(function (e) {
                 e.preventDefault();
-                var ProductCategoryName = $('#ProductCategoryName').val();
-                if (ProductCategoryName == "") {
+                var productCategoryName = $('#ProductCategoryName').val();
+                var flag = $('#Flag').val();
+                var productCategoryId = $('#ProductCategoryId').val();
+
+                if (productCategoryName == "") {
                     alert("Please enter product category");
                     $('#ProductCategoryName').focus();
                     return;
                 }
-                var con = confirm("Are you sure you want to add this category");
+
+                var type = "POST" //add
+                var url = '../../api/ProductCategory/AddProductCategory'; //add
+                var confirmMessage = "Are you sure you want to add this category";
+
+                if (flag == "U") { //update
+                    type = "PATCH";
+                    url = "../../api/ProductCategory/UpdateProductCategory"
+                    confirmMessage = "Are you sure you want to update this category";
+                }
+
+                var con = confirm(confirmMessage);
                 if (con) {
-               
-                var ProductCategory = {};
-                ProductCategory.ProductCategoryName = ProductCategoryName;               
+
+                    //building product category object
+                    var productCategory = {};
+                    productCategory.ProductCategoryName = productCategoryName;
+                    productCategory.ProductCategoryID = Number(productCategoryId);
+                    productCategory.Flag = flag;
+
                     $.ajax({
-                        url: '../../api/ProductCategory/AddProductCategory',
+                        url: url,
                         cache: false,
-                        type: 'POST',
+                        type: type,
                         contentType: 'application/json',
-                        data: JSON.stringify(ProductCategory),
+                        data: JSON.stringify(productCategory),
                         success: successFunc,
                         error: errorFunc
                     });
@@ -142,40 +165,46 @@
                     //alert("Error occured");//To avoid alerting if no internet connection.
                     console.log(error);
                 }
-                //$.ajax({
-                //    url: '../../api/ProductCategory/AddProductCategory',
-                //    cache: false,
-                //    type: 'POST',
-                //    contentType: 'application/json',
-                //    data: JSON.stringify(ProductCategory),
-                //    statusCode: {
-                //        200: successFunc,
-                //        400: validateFunc,
-                //    },
-                //    error: errorFunc
-                //});
-
-                //function successFunc(response) {
-                //    console.log(response);
-                //    alert(response);
-                //    location.reload();
-                //}
-
-                //function validateFunc(response) {
-                //    console.log(response);
-                //    alert(response.responseText.Message);
-                //}
-
-                //function errorFunc(error) {
-                //    //alert("Error occured");//To avoid alerting if no internet connection.
-                //    console.log(error);
-                //}
             })
 
             $('#Clear').click(function (e) {
                 e.preventDefault();
                 $('#ProductCategoryName').val('');
+                $('#Flag').val("A");
+                $('#Save').val("Save");
 
+            })
+
+            $('.editCategory').click(function (e) {
+                var id = $(this).attr('id');
+                if (id == 'Edit') {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    var ProductCategoryID = $(this).attr("href");
+                }
+                $.ajax({
+                    url: '../../api/ProductCategory/GetProductCategoryById',
+                    cache: false,
+                    type: 'GET',
+                    contentType: 'application/json',
+                    data: {
+                        id: Number(ProductCategoryID)
+                    },
+                    success: successFunc,
+                    error: errorFunc
+                });
+
+                function successFunc(response) {
+                    console.log(response);
+                    $('#ProductCategoryName').val(response.ProductCategoryName);
+                    $('#Flag').val("U");
+                    $('#Save').val("Update");
+                    $('#ProductCategoryId').val(response.ProductCategoryID);
+                }
+
+                function errorFunc(error) {
+                    console.log(error);
+                }
             })
 
             $(document).ajaxStart(function () {
