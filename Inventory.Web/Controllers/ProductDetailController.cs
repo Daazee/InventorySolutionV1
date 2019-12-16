@@ -16,18 +16,37 @@ namespace Inventory.Web.Controllers
         private string message;
         ProductDetailBs productDetailBs = new ProductDetailBs();
         IEnumerable<ProductDetailNonCyclical> ProductDetailResult { get; set; }
-       
+
         [HttpPost]
         [Route("AddProduct")]
         public string PostProduct(ProductDetail ProductDetailObj)
         {
-            ProductDetailObj.CreatedBy = "admin";
-            ProductDetailObj.KeyDate = DateTime.Today;
-            ProductDetailObj.Flag = "A";
+            ProductDetailObj.ModifiedBy = ProductDetailObj.CreatedBy = "admin";
+            ProductDetailObj.ModifiedOn = ProductDetailObj.CreatedOn = DateTime.Today;
+            ProductDetailObj.Flag = ProductDetailObj.Flag;
             productDetailBs.Insert(ProductDetailObj);
             message = "Product added successfully";
             return message;
         }
+
+        [HttpPatch]
+        [Route("UpdateProduct")]
+        public IHttpActionResult PatchProductCategory(ProductDetail ProductDetailObj)
+        {
+            if (string.IsNullOrEmpty(ProductDetailObj.ProductName))
+            {
+                return BadRequest("Product name must be supplied");
+            }
+
+
+            ProductDetailObj.ModifiedBy = "admin";
+            ProductDetailObj.ModifiedOn = DateTime.Today;
+            ProductDetailObj.Flag = ProductDetailObj.Flag;
+            productDetailBs.Update(ProductDetailObj);
+            message = "Product updated successfully";
+            return Ok(message);
+        }
+
 
         [HttpGet]
         [Route("GetProducts")]
@@ -37,25 +56,32 @@ namespace Inventory.Web.Controllers
         }
 
         [HttpGet]
+        [Route("GetProductById")]
+        public IHttpActionResult GetProductById(int id)
+        {
+            return Ok(productDetailBs.GetById(id));
+        }
+
+        [HttpGet]
         [Route("GetProductsByCategoryID")]
-       // public IHttpActionResult GetProducts(int ProductCategoryID)
-             public IEnumerable<ProductDetailNonCyclical> GetProducts(int ProductCategoryID)
+        // public IHttpActionResult GetProducts(int ProductCategoryID)
+        public IEnumerable<ProductDetailNonCyclical> GetProducts(int ProductCategoryID)
         {
             var result = productDetailBs.GetByProductCategoryID(ProductCategoryID);
-            if(result == null)
+            if (result == null)
             {
                 return null;
             }
-          var  ProductDetailResult = result.Select(x => new ProductDetailNonCyclical
-          {
-              ProductCategoryID =  x.ProductCategoryID,
-              ProductDetailID = x.ProductDetailID,
-              ProductName = x.ProductName,
-              Price = x.Price
+            var ProductDetailResult = result.Select(x => new ProductDetailNonCyclical
+            {
+                ProductCategoryID = x.ProductCategoryID,
+                ProductDetailID = x.ProductDetailID,
+                ProductName = x.ProductName,
+                CostPrice = x.CostPrice,
+                SellingPrice = x.SellingPrice
 
-          });
+            });
             return ProductDetailResult;
-           // return OK(productDetailBs.GetByProductCategoryID(ProductCategoryID));
         }
 
 
@@ -79,7 +105,7 @@ namespace Inventory.Web.Controllers
         [Route("DeleteProduct")]
         public void DeleteProduct(int ProductDetailID)
         {
-           productDetailBs.Delete(ProductDetailID);
+            productDetailBs.Delete(ProductDetailID);
         }
     }
 }
