@@ -48,7 +48,8 @@ namespace Inventory.Web.Areas.Admin.Controllers
                 ProductCategoryID = x.ProductCategoryID,
                 ProductDetailID = x.ProductDetailID,
                 ProductName = x.ProductName,
-                Price = x.Price
+                CostPrice = x.CostPrice,
+                SellingPrice = x.SellingPrice
 
             });
             return Json(ProductDetailResult, JsonRequestBehavior.AllowGet);

@@ -44,9 +44,16 @@
                     </div>
 
                     <div class="form-group">
-                        @Html.Label("Price", htmlAttributes: new { @class = "control-label col-md-2" })
+                        @Html.Label("Cost Price", htmlAttributes: new { @class = "control-label col-md-2" })
                         <div class="col-md-10">
-                            @Html.TextBox("Price", "", new { @class = "form-control" })
+                            @Html.TextBox("CostPrice", "", new { @class = "form-control" })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        @Html.Label("Selling Price", htmlAttributes: new { @class = "control-label col-md-2" })
+                        <div class="col-md-10">
+                            @Html.TextBox("SellingPrice", "", new { @class = "form-control" })
                         </div>
                     </div>
 
@@ -59,6 +66,7 @@
                 </div>
                 <div style="display:none">
                     @Html.TextBox("Flag", "false")
+                    @Html.TextBox("ProductDetailID")
                 </div>
             </div>
         </div>
@@ -67,7 +75,11 @@
 
 }
 
-
+<!-- Loader start-->
+<div class="loading" id="spinner" style="display:none">
+    <div class="loader"></div>
+</div>
+<!-- loader end -->
 <div class="container">
     <div class="table-responsive">
         <table class="table table-striped table-bordered table-hover" id="searchresult">
@@ -81,13 +93,22 @@
                         @Html.DisplayNameFor(model => model.ProductName)
                     </th>
                     <th>
-                        @Html.DisplayNameFor(model => model.Price)
+                        @Html.DisplayNameFor(model => model.CostPrice)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.SellingPrice)
                     </th>
                     <th>
                         @Html.DisplayNameFor(model => model.CreatedBy)
                     </th>
                     <th>
                         Created On
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.ModifiedBy)
+                    </th>
+                    <th>
+                        Modified On
                     </th>
                     <th> </th>
                 </tr>
@@ -106,15 +127,25 @@
                             @Html.DisplayFor(modelItem => item.ProductName)
                         </td>
                         <td>
-                            @Html.DisplayFor(modelItem => item.Price)
+                            @Html.DisplayFor(modelItem => item.CostPrice)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.SellingPrice)
                         </td>
                         <td>
                             @Html.DisplayFor(modelItem => item.CreatedBy)
                         </td>
                         <td>
-                            @Html.DisplayFor(modelItem => item.KeyDate)
+                            @Html.DisplayFor(modelItem => item.CreatedOn)
                         </td>
                         <td>
+                            @Html.DisplayFor(modelItem => item.ModifiedBy)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.ModifiedOn)
+                        </td>
+                        <td>
+                            <a href="@item.ProductDetailID" id="Edit" name="Edit" class="btn btn-primary editProduct">Edit</a>
                             <a href="@item.ProductDetailID" id="Delete" name="Delete" class="btn btn-danger deleteProduct">Delete</a>
                         </td>
                     </tr>
@@ -129,39 +160,73 @@
         $(document).ready(function () {
             $('#Save').click(function (e) {
                 e.preventDefault();
-                var ProductDetail = {};
 
-                var ProductCategoryID = $('#ProductCategoryID').val();
-                var ProductName = $('#ProductName').val();
-                var Price = $('#Price').val();
+                var productCategoryID = $('#ProductCategoryID').val();
+                var productName = $('#ProductName').val();
+                var costPrice = $('#CostPrice').val();
+                var sellingPrice = $('#SellingPrice').val();
+                var productDetailID = $('#ProductDetailID').val();
+                var flag = $('#Flag').val();
 
-                ProductDetail.ProductCategoryID = ProductCategoryID;
-                ProductDetail.ProductName = ProductName;
-                ProductDetail.Price = Price;
-
-                if (ProductCategoryID == "") {
+                if (productCategoryID == "") {
                     alert("Please select product category");
                     $('#ProductCategoryID').focus();
+                    return;
                 }
-                else if (ProductName == "") {
+                else if (productName == "") {
                     alert("Please enter product name");
                     $('#ProductName').focus();
+                    return;
                 }
-                else if (Price == "") {
-                    alert("Please enter product price");
-                    $('#Price').focus();
+                else if (costPrice == "") {
+                    alert("Please enter product cost price");
+                    $('#CostPrice').focus();
+                    return;
                 }
-                else if (Price != "" && !$.isNumeric(Price)) {
-                    alert("Price must be numeric");
-                    $('#Price').focus();
+                else if (costPrice != "" && !$.isNumeric(costPrice)) {
+                    alert("Cost Price must be numeric");
+                    $('#CostPrice').focus();
+                    return;
                 }
-                else {
+                else if (sellingPrice == "") {
+                    alert("Please enter product selling price");
+                    $('#SellingPrice').focus();
+                    return;
+                }
+                else if (sellingPrice != "" && !$.isNumeric(sellingPrice)) {
+                    alert("Selling Price must be numeric");
+                    $('#SellingPrice').focus();
+                    return;
+                }
+
+
+                var type = "POST" //add
+                var url = '../../api/ProductDetail/AddProduct'; //add
+                var confirmMessage = "Are you sure you want to add this product";
+
+                if (flag == "U") { //update
+                    type = "PATCH";
+                    url = "../../api/ProductDetail/UpdateProduct"
+                    confirmMessage = "Are you sure you want to update this product";
+                }
+
+                var con = confirm(confirmMessage);
+                if (con) {
+
+                    var productDetail = {};
+                    productDetail.ProductCategoryID = productCategoryID;
+                    productDetail.ProductName = productName;
+                    productDetail.CostPrice = costPrice;
+                    productDetail.SellingPrice = sellingPrice;
+                    productDetail.ProductDetailID = Number(productDetailID);
+                    productDetail.Flag = flag;
+
                     $.ajax({
-                        url: '../../api/ProductDetail/AddProduct',
+                        url: url,
                         cache: false,
-                        type: 'POST',
+                        type: type,
                         contentType: 'application/json',
-                        data: JSON.stringify(ProductDetail),
+                        data: JSON.stringify(productDetail),
                         success: successFunc,
                         error: errorFunc
                     });
@@ -183,14 +248,14 @@
                 e.preventDefault();
                 $('#ProductCategoryID').val('');
                 $('#ProductName').val('');
-                $('#Price').val('');
-
+                $('#CostPrice').val('');
+                $('#SellingPrice').val('');
+                $('#Save').val("Save");
             })
 
             $('.deleteProduct').click(function (e) {
                 var id = $(this).attr('id');
-                if (id == 'Delete')
-                {
+                if (id == 'Delete') {
                     e.preventDefault();
                     e.stopPropagation();
                     var ProductDetailID = $(this).attr("href");
@@ -220,6 +285,49 @@
                     }
                 }
             })
+
+            $('.editProduct').click(function (e) {
+                var id = $(this).attr('id');
+                if (id == 'Edit') {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    var productDetailID = $(this).attr("href");
+                }
+                $.ajax({
+                    url: '../../api/ProductDetail/GetProductById',
+                    cache: false,
+                    type: 'GET',
+                    contentType: 'application/json',
+                    data: {
+                        id: Number(productDetailID)
+                    },
+                    success: successFunc,
+                    error: errorFunc
+                });
+
+                function successFunc(response) {
+                    console.log(response);
+                    $('#ProductCategoryID').val(response.ProductCategoryID);
+                    $('#ProductName').val(response.ProductName);
+                    $('#CostPrice').val(response.CostPrice);
+                    $('#SellingPrice').val(response.SellingPrice);
+                    $('#Flag').val("U");
+                    $('#Save').val("Update");
+                    $('#ProductDetailID').val(response.ProductDetailID);
+                }
+
+                function errorFunc(error) {
+                    console.log(error);
+                }
+            })
+
+            $(document).ajaxStart(function () {
+                $("#spinner").css("display", "block");
+            });
+
+            $(document).ajaxComplete(function () {
+                $("#spinner").css("display", "none");
+            });
         })
 
     </script>

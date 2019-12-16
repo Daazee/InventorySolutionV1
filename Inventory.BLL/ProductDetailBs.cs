@@ -40,7 +40,10 @@ namespace Inventory.BLL
         {
             var ProductDetailExist = NewProductDetailDA.GetById(ProductDetailBsObj.ProductDetailID);
             ProductDetailExist.ProductName = ProductDetailBsObj.ProductName;
-           // ProductDetailExist.ProductDetailID = ProductDetailBsObj.ProductDetailID;
+            ProductDetailExist.SellingPrice = ProductDetailBsObj.SellingPrice;
+            ProductDetailExist.CostPrice = ProductDetailBsObj.CostPrice;
+            ProductDetailExist.ModifiedBy = ProductDetailBsObj.ModifiedBy;
+            ProductDetailBsObj.ModifiedOn = ProductDetailBsObj.ModifiedOn;
             ProductDetailExist.Flag = ProductDetailBsObj.Flag;
             NewProductDetailDA.Update(ProductDetailExist);
         }

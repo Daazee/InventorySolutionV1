@@ -51,7 +51,7 @@ namespace Inventory.DAL
 
         public double GetPrice(int ProductDetailID)
         {
-            double price = context.ProductDetails.Where(c => c.ProductDetailID == ProductDetailID).Select(x => x.Price).FirstOrDefault();
+            double price = context.ProductDetails.Where(c => c.ProductDetailID == ProductDetailID).Select(x => x.SellingPrice).FirstOrDefault();
 
             return price;
         }
