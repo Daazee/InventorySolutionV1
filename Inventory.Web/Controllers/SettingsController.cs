@@ -22,7 +22,7 @@ namespace Inventory.Web.Controllers
         public string AddProductCategory(ProductCategory ProductCategoryObj)
         {
             ProductCategoryObj.CreatedBy = "admin";
-            ProductCategoryObj.KeyDate = DateTime.Today;
+            ProductCategoryObj.CreatedOn = DateTime.Today;
             ProductCategoryObj.Flag = "A";
             productCategoryBs.Insert(ProductCategoryObj);
             message = "Product category save successfully";
