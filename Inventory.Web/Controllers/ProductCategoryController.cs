@@ -16,33 +16,46 @@ namespace Inventory.Web.Controllers
         // GET api/<controller>
         private string message;
         ProductCategoryBs productCategoryBs = new ProductCategoryBs();
-       
+
+        [HttpGet]
+        [Route("GetProductCategoryById")]
+        public IHttpActionResult GetProductCategoryById(int id)
+        {
+            return Ok(productCategoryBs.GetById(id));
+        }
+
         [HttpPost]
         [Route("AddProductCategory")]
-        //public string PostProductCategory(ProductCategory ProductCategoryObj)
-        //{
-        //    ProductCategoryObj.CreatedBy = "admin";
-        //    ProductCategoryObj.KeyDate = DateTime.Today;
-        //    ProductCategoryObj.Flag = "A";
-        //    productCategoryBs.Insert(ProductCategoryObj);
-        //    message = "Product category save successfully";
-        //    return message;
-        //}
-
         public IHttpActionResult PostProductCategory(ProductCategory ProductCategoryObj)
         {
-            if(string.IsNullOrEmpty( ProductCategoryObj.ProductCategoryName))
+            if (string.IsNullOrEmpty(ProductCategoryObj.ProductCategoryName))
             {
                 return BadRequest("Product category name must be supplied");
             }
-            ProductCategoryObj.CreatedBy = "admin";
-            ProductCategoryObj.KeyDate = DateTime.Today;
-            ProductCategoryObj.Flag = "A";
+            ProductCategoryObj.ModifiedBy = ProductCategoryObj.CreatedBy = "admin";
+            ProductCategoryObj.ModifiedOn = ProductCategoryObj.CreatedOn = DateTime.Today;
+            ProductCategoryObj.Flag = ProductCategoryObj.Flag;
             var category = productCategoryBs.GetProductCategoryByName(ProductCategoryObj.ProductCategoryName);
             if (category != null)
                 return Ok("Product category already exist");
             productCategoryBs.Insert(ProductCategoryObj);
-            message = "Product category save successfully";       
+            message = "Product category save successfully";
+            return Ok(message);
+        }
+
+        [HttpPatch]
+        [Route("UpdateProductCategory")]
+        public IHttpActionResult PatchProductCategory(ProductCategory ProductCategoryObj)
+        {
+            if (string.IsNullOrEmpty(ProductCategoryObj.ProductCategoryName))
+            {
+                return BadRequest("Product category name must be supplied");
+            }
+            ProductCategoryObj.ModifiedBy = "admin";
+            ProductCategoryObj.ModifiedOn = DateTime.Today;
+            ProductCategoryObj.Flag = ProductCategoryObj.Flag;
+            productCategoryBs.Update(ProductCategoryObj);
+            message = "Product category updated successfully";
             return Ok(message);
         }
 
