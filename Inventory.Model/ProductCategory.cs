@@ -20,9 +20,14 @@ namespace Inventory.Model
 
         public string CreatedBy { get; set; }
 
+        public string ModifiedBy { get; set; }
+
 
         [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}", ApplyFormatInEditMode = true)]
-        public DateTime KeyDate { get; set; }
+        public DateTime CreatedOn { get; set; }
+
+        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}", ApplyFormatInEditMode = true)]
+        public DateTime ModifiedOn { get; set; }
 
         public virtual ICollection<ProductDetail> ProductDetails { get; set; }
 
