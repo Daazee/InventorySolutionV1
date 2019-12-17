@@ -57,6 +57,13 @@
                         </div>
                     </div>
 
+                     <div class="form-group">
+                        @Html.Label("Reorder Level", htmlAttributes: new { @class = "control-label col-md-2" })
+                        <div class="col-md-10">
+                            @Html.TextBox("ReorderLevel", "", new { @class = "form-control" })
+                        </div>
+                    </div>
+
                 </div>
                 <div class="form-group">
                     <div class="col-md-offset-2 col-md-10">
@@ -99,17 +106,20 @@
                         @Html.DisplayNameFor(model => model.SellingPrice)
                     </th>
                     <th>
+                        @Html.DisplayNameFor(model => model.ReorderLevel)
+                    </th>
+                    <th>
                         @Html.DisplayNameFor(model => model.CreatedBy)
                     </th>
                     <th>
                         Created On
                     </th>
-                    <th>
+                    @*<th>
                         @Html.DisplayNameFor(model => model.ModifiedBy)
                     </th>
                     <th>
                         Modified On
-                    </th>
+                    </th>*@
                     <th> </th>
                 </tr>
             </thead>
@@ -118,37 +128,40 @@
             {
                 foreach (var item in Model)
                 {
-                    <tr>
-                        <td>
-                            @*@Html.DisplayFor(modelItem => item.ProductCategoryID)*@
-                            @Html.DisplayFor(modelItem => item.ProductCategory.ProductCategoryName)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.ProductName)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.CostPrice)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.SellingPrice)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.CreatedBy)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.CreatedOn)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.ModifiedBy)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.ModifiedOn)
-                        </td>
-                        <td>
-                            <a href="@item.ProductDetailID" id="Edit" name="Edit" class="btn btn-primary editProduct">Edit</a>
-                            <a href="@item.ProductDetailID" id="Delete" name="Delete" class="btn btn-danger deleteProduct">Delete</a>
-                        </td>
-                    </tr>
+            <tr>
+                <td>
+                    @*@Html.DisplayFor(modelItem => item.ProductCategoryID)*@
+                    @Html.DisplayFor(modelItem => item.ProductCategory.ProductCategoryName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ProductName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.CostPrice)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.SellingPrice)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ReorderLevel)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.CreatedBy)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.CreatedOn)
+                </td>
+                @*<td>
+                    @Html.DisplayFor(modelItem => item.ModifiedBy)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ModifiedOn)
+                </td>*@
+                <td>
+                    <a href="@item.ProductDetailID" id="Edit" name="Edit" class="btn btn-primary editProduct">Edit</a>
+                    <a href="@item.ProductDetailID" id="Delete" name="Delete" class="btn btn-danger deleteProduct">Delete</a>
+                </td>
+            </tr>
                 }
             }
 
@@ -166,6 +179,7 @@
                 var costPrice = $('#CostPrice').val();
                 var sellingPrice = $('#SellingPrice').val();
                 var productDetailID = $('#ProductDetailID').val();
+                var reorderLevel = $('#ReorderLevel').val();
                 var flag = $('#Flag').val();
 
                 if (productCategoryID == "") {
@@ -199,6 +213,17 @@
                     return;
                 }
 
+                else if (reorderLevel == "") {
+                    alert("Please enter product reorder level");
+                    $('#SellingPrice').focus();
+                    return;
+                }
+                else if (reorderLevel != "" && !$.isNumeric(reorderLevel)) {
+                    alert("Reorder Level must be numeric");
+                    $('#ReorderLevel').focus();
+                    return;
+                }
+
 
                 var type = "POST" //add
                 var url = '../../api/ProductDetail/AddProduct'; //add
@@ -220,7 +245,7 @@
                     productDetail.SellingPrice = sellingPrice;
                     productDetail.ProductDetailID = Number(productDetailID);
                     productDetail.Flag = flag;
-
+                    productDetail.ReorderLevel = reorderLevel;
                     $.ajax({
                         url: url,
                         cache: false,
@@ -248,9 +273,10 @@
                 e.preventDefault();
                 $('#ProductCategoryID').val('');
                 $('#ProductName').val('');
-                $('#CostPrice').val('');
-                $('#SellingPrice').val('');
+                $('#CostPrice').val('0');
+                $('#SellingPrice').val('0');
                 $('#Save').val("Save");
+                $('#ReorderLevel').val("0");
             })
 
             $('.deleteProduct').click(function (e) {
@@ -314,6 +340,7 @@
                     $('#Flag').val("U");
                     $('#Save').val("Update");
                     $('#ProductDetailID').val(response.ProductDetailID);
+                    $('#ReorderLevel').val(response.ReorderLevel);
                 }
 
                 function errorFunc(error) {

@@ -42,6 +42,7 @@ namespace Inventory.BLL
             ProductDetailExist.ProductName = ProductDetailBsObj.ProductName;
             ProductDetailExist.SellingPrice = ProductDetailBsObj.SellingPrice;
             ProductDetailExist.CostPrice = ProductDetailBsObj.CostPrice;
+            ProductDetailExist.ReorderLevel = ProductDetailBsObj.ReorderLevel;
             ProductDetailExist.ModifiedBy = ProductDetailBsObj.ModifiedBy;
             ProductDetailBsObj.ModifiedOn = ProductDetailBsObj.ModifiedOn;
             ProductDetailExist.Flag = ProductDetailBsObj.Flag;

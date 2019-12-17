@@ -31,6 +31,10 @@ namespace Inventory.Model
         [Display(Name = "Selling Price")]
         public double SellingPrice { get; set; }
 
+        [Required]
+        [Display(Name = "Reorder Level")]
+        public int ReorderLevel { get; set; }
+
         public string Flag { get; set; }
 
         [Required]

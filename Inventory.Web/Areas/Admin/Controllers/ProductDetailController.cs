@@ -49,7 +49,8 @@ namespace Inventory.Web.Areas.Admin.Controllers
                 ProductDetailID = x.ProductDetailID,
                 ProductName = x.ProductName,
                 CostPrice = x.CostPrice,
-                SellingPrice = x.SellingPrice
+                SellingPrice = x.SellingPrice,
+                ReorderLevel = x.ReorderLevel
 
             });
             return Json(ProductDetailResult, JsonRequestBehavior.AllowGet);

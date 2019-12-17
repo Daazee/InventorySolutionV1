@@ -14,6 +14,7 @@ namespace Inventory.Model
         public string ProductName { get; set; }
         public double CostPrice { get; set; }
         public double SellingPrice { get; set; }
+        public int ReorderLevel { get; set; }
         public string Flag { get; set; }
 
         public string CreatedBy { get; set; }
