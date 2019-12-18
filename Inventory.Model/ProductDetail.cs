@@ -35,14 +35,17 @@ namespace Inventory.Model
         [Display(Name = "Reorder Level")]
         public int ReorderLevel { get; set; }
 
+        [Display(Name = "Modified By")]
+        public string ModifiedBy { get; set; }
+
         public string Flag { get; set; }
 
         [Required]
         [Display(Name = "Created By")]
         public string CreatedBy { get; set; }
 
-        [Display(Name = "Modified By")]
-        public string ModifiedBy { get; set; }
+        [Display(Name = "Stock Level")]
+        public int StockLevel { get; set; }
 
 
         [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}", ApplyFormatInEditMode = true)]
