@@ -9,7 +9,7 @@ using System.Data.Entity;
 namespace Inventory.DAL
 
 {
-   public class ProductDetailDA
+    public class ProductDetailDA
     {
         public InventoryContext context = new InventoryContext();
         public IEnumerable<ProductDetail> ListAll()
@@ -30,10 +30,16 @@ namespace Inventory.DAL
         {
             return context.ProductDetails.Where(c => c.ProductCategoryID == CategoryCode).ToList();
         }
-        public void Insert(ProductDetail ProductDetailObj)
+
+        public ProductDetail GetProductByCategoryIdAndProductName(int categoryId, string productName)
+        {
+            return context.ProductDetails.Where(c => c.ProductName == productName && c.ProductCategoryID == categoryId).FirstOrDefault();
+        }
+        public int Insert(ProductDetail ProductDetailObj)
         {
             context.ProductDetails.Add(ProductDetailObj);
-            context.SaveChanges();
+            productId = context.SaveChanges();
+            return ProductDetailObj.ProductDetailID;
         }
 
         public void Update(ProductDetail ProductDetailObj)

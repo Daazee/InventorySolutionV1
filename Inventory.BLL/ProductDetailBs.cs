@@ -31,9 +31,15 @@ namespace Inventory.BLL
         {
             return NewProductDetailDA.GetByProductCategoryID(CategoryCode);
         }
-        public void Insert(ProductDetail ProductDetailBsObj)
+
+        public ProductDetail GetProductByCategoryIdAndProductName(int categoryId, string productName)
         {
-            NewProductDetailDA.Insert(ProductDetailBsObj);
+           return NewProductDetailDA.GetProductByCategoryIdAndProductName(categoryId, productName);
+        }
+
+        public int Insert(ProductDetail ProductDetailBsObj)
+        {
+            return NewProductDetailDA.Insert(ProductDetailBsObj);
         }
 
         public void Update(ProductDetail ProductDetailBsObj)
