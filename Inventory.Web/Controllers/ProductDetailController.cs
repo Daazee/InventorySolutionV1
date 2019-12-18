@@ -15,18 +15,57 @@ namespace Inventory.Web.Controllers
     {
         private string message;
         ProductDetailBs productDetailBs = new ProductDetailBs();
+        StockBs stockBs = new StockBs();
+        StockHistoryBs stockHistoryBs = new StockHistoryBs();
         IEnumerable<ProductDetailNonCyclical> ProductDetailResult { get; set; }
 
         [HttpPost]
         [Route("AddProduct")]
-        public string PostProduct(ProductDetail ProductDetailObj)
+        public IHttpActionResult PostProduct(ProductDetail ProductDetailObj)
         {
+            var product = productDetailBs.GetProductByCategoryIdAndProductName(ProductDetailObj.ProductCategoryID, ProductDetailObj.ProductName);
+            if (product != null)
+                return Ok("Product already exist"); ;
             ProductDetailObj.ModifiedBy = ProductDetailObj.CreatedBy = "admin";
             ProductDetailObj.ModifiedOn = ProductDetailObj.CreatedOn = DateTime.Today;
             ProductDetailObj.Flag = ProductDetailObj.Flag;
-            productDetailBs.Insert(ProductDetailObj);
+            int productId = productDetailBs.Insert(ProductDetailObj);
+
+            //Added newly created product to stock if stock is greater than level is greater than zero
+            if (ProductDetailObj.StockLevel > 0)
+            {
+                Stock StockObj = new Stock();
+                StockHistory StockHistoryObj = new StockHistory();
+                
+                StockHistoryObj.ProductCategoryID = StockObj.ProductCategoryID = ProductDetailObj.ProductCategoryID;
+                StockHistoryObj.ProductDetailID = StockObj.ProductDetailID = productId;
+                StockObj.StockLevel = ProductDetailObj.StockLevel;
+                //Get stock level before delivery
+                int CurrentStockLevel = stockBs.GetStockLevelByProductDetailID(StockObj.ProductDetailID);
+                StockHistoryObj.UnitAsAtDelievery = CurrentStockLevel;
+                StockHistoryObj.UnitReceived = StockObj.StockLevel;
+                StockObj.StockLevel += CurrentStockLevel;
+
+                StockHistoryObj.CreatedBy = StockObj.CreatedBy = "admin";
+                StockHistoryObj.CreatedOn = StockObj.CreatedOn = DateTime.Today;
+                StockHistoryObj.ModifiedOn = StockObj.ModifiedOn = DateTime.Today;
+                StockHistoryObj.ModifiedBy = StockObj.ModifiedBy = "admin";
+
+
+                var StockExist = stockBs.GetByProductDetailID(StockObj.ProductDetailID);
+                if (StockExist == null)
+                {
+                    StockHistoryObj.Flag = StockObj.Flag = "A";
+                    stockBs.Insert(StockObj);
+                }
+
+                stockHistoryBs.Insert(StockHistoryObj);
+
+            }
+
+
             message = "Product added successfully";
-            return message;
+            return Ok(message);
         }
 
         [HttpPatch]

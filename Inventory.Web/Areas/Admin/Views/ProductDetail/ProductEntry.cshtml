@@ -57,10 +57,17 @@
                         </div>
                     </div>
 
-                     <div class="form-group">
+                    <div class="form-group">
                         @Html.Label("Reorder Level", htmlAttributes: new { @class = "control-label col-md-2" })
                         <div class="col-md-10">
                             @Html.TextBox("ReorderLevel", "", new { @class = "form-control" })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        @Html.Label("Stock Level", htmlAttributes: new { @class = "control-label col-md-2" })
+                        <div class="col-md-10">
+                            @Html.TextBox("StockLevel", "0", new { @class = "form-control" })
                         </div>
                     </div>
 
@@ -109,7 +116,7 @@
                         @Html.DisplayNameFor(model => model.ReorderLevel)
                     </th>
                     <th>
-                        @Html.DisplayNameFor(model => model.CreatedBy)
+                        @Html.DisplayNameFor(model => model.StockLevel)
                     </th>
                     <th>
                         Created On
@@ -146,7 +153,7 @@
                     @Html.DisplayFor(modelItem => item.ReorderLevel)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.CreatedBy)
+                    @Html.DisplayFor(modelItem => item.StockLevel)
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.CreatedOn)
@@ -180,6 +187,7 @@
                 var sellingPrice = $('#SellingPrice').val();
                 var productDetailID = $('#ProductDetailID').val();
                 var reorderLevel = $('#ReorderLevel').val();
+                var stockLevel = $('#StockLevel').val();
                 var flag = $('#Flag').val();
 
                 if (productCategoryID == "") {
@@ -224,6 +232,17 @@
                     return;
                 }
 
+                else if (stockLevel == "") {
+                    alert("Please enter product stock level");
+                    $('#ReorderLevel').focus();
+                    return;
+                }
+                else if (stockLevel != "" && !$.isNumeric(stockLevel)) {
+                    alert("Stock Level Level must be numeric");
+                    $('#ReorderLevel').focus();
+                    return;
+                }
+
 
                 var type = "POST" //add
                 var url = '../../api/ProductDetail/AddProduct'; //add
@@ -246,6 +265,7 @@
                     productDetail.ProductDetailID = Number(productDetailID);
                     productDetail.Flag = flag;
                     productDetail.ReorderLevel = reorderLevel;
+                    productDetail.StockLevel = stockLevel;
                     $.ajax({
                         url: url,
                         cache: false,
@@ -317,6 +337,7 @@
                 if (id == 'Edit') {
                     e.preventDefault();
                     e.stopPropagation();
+                    $('#StockLevel').attr("disabled", "disabled");
                     var productDetailID = $(this).attr("href");
                 }
                 $.ajax({
@@ -341,6 +362,7 @@
                     $('#Save').val("Update");
                     $('#ProductDetailID').val(response.ProductDetailID);
                     $('#ReorderLevel').val(response.ReorderLevel);
+                    $('#StockLevel').val(response.StockLevel);
                 }
 
                 function errorFunc(error) {

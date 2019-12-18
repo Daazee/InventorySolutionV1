@@ -38,7 +38,7 @@ namespace Inventory.DAL
         public int Insert(ProductDetail ProductDetailObj)
         {
             context.ProductDetails.Add(ProductDetailObj);
-            productId = context.SaveChanges();
+            context.SaveChanges();
             return ProductDetailObj.ProductDetailID;
         }
 
