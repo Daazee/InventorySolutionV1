@@ -18,8 +18,10 @@ namespace Inventory.Model
         [Display(Name = "Product Code")]
         public int ProductDetailID { get; set; }
 
+        [Display(Name = "Unit as at Delievery")]
         public int UnitAsAtDelievery { get; set; }
 
+        [Display(Name = "Unit Received")]
         public int UnitReceived { get; set; }
 
         public string Flag { get; set; }
