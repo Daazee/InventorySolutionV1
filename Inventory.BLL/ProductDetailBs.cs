@@ -55,6 +55,13 @@ namespace Inventory.BLL
             NewProductDetailDA.Update(ProductDetailExist);
         }
 
+        public void UpdateStcokLevel(ProductDetail ProductDetailBsObj)
+        {
+            var productDetailExist = NewProductDetailDA.GetById(ProductDetailBsObj.ProductDetailID);
+            productDetailExist.StockLevel = ProductDetailBsObj.StockLevel;
+            NewProductDetailDA.UpdateStcokLevel(productDetailExist);
+        }
+
         public void Delete(int ProductDetailID)
         {
             NewProductDetailDA.Delete(ProductDetailID);

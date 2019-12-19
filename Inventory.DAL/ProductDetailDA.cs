@@ -48,6 +48,12 @@ namespace Inventory.DAL
             context.SaveChanges();
         }
 
+        public void UpdateStcokLevel(ProductDetail ProductDetailObj)
+        {
+            context.Entry(ProductDetailObj).State = EntityState.Modified;
+            context.SaveChanges();
+        }
+
         public void Delete(int id)
         {
             var search = context.ProductDetails.Where(c => c.ProductDetailID == id).FirstOrDefault();
