@@ -14,7 +14,7 @@ namespace Inventory.Web.Areas.User.Controllers
         ProductDetailBs productDetailBs = new ProductDetailBs();
         SalesBs salesBs = new SalesBs();
         Sales salesObjMain = new Sales();
-       
+
 
         StockBs stockBs = new StockBs();
         Stock StockObj = new Stock();
@@ -27,6 +27,7 @@ namespace Inventory.Web.Areas.User.Controllers
         CompanyLogo CompanyLogoObj = new CompanyLogo();
         UserBs userBs = new UserBs();
         Receipt receipt = new Receipt();
+        ProductDetail ProductDetailObj = new ProductDetail();
         // GET: User/Sales
         public ActionResult Index()
         {
@@ -54,7 +55,7 @@ namespace Inventory.Web.Areas.User.Controllers
             //    return RedirectToAction("Login", new { Area = "Security", Controller = "Access" });
             //}
             ViewBag.ProudctCategory = new SelectList(productCategoryBs.ListAll(), "ProductCategoryID", "ProductCategoryName");
-           // ViewBag.ProudctName = new SelectList(productDetailBs.ListAll(), "ProductDetailID", "ProductName");
+            // ViewBag.ProudctName = new SelectList(productDetailBs.ListAll(), "ProductDetailID", "ProductName");
 
             return PartialView();
         }
@@ -95,30 +96,30 @@ namespace Inventory.Web.Areas.User.Controllers
                     salesObjMain.TransactionNo = Session["TransactionNo"].ToString(); ;
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 ViewData["Message"] = ex.Message;
             }
-                StockObj.ProductCategoryID = salesObjMain.ProductCategoryID = SalesObj.ProductCategoryID;
-                StockObj.ProductDetailID = salesObjMain.ProductDetailID = SalesObj.ProductDetailID;
-                salesObjMain.Rate = Convert.ToDouble(SalesObj.Rate);
-                salesObjMain.Quantity = SalesObj.Quantity;
-                salesObjMain.TotalAmount = Convert.ToDouble(SalesObj.TotalAmount);
-                salesObjMain.AmountPaid = Convert.ToDouble(SalesObj.AmountPaid);
-                salesObjMain.TotalProductCostAmount = Convert.ToDouble(SalesObj.TotalProductCostAmount);
-                Session["TransactionNo"] = salesObjMain.TransactionNo;
-                salesObjMain.HeaderDetail = SalesObj.HeaderDetail;
-                salesObjMain.CreatedBy = "admin";
-                salesObjMain.CreatedOn = DateTime.Today;
-                StockObj.ModifiedBy = salesObjMain.ModifiedBy = "admin";
-                StockObj.ModifiedOn = salesObjMain.ModifiedOn = DateTime.Today;
-                salesBs.Insert(salesObjMain);
+            StockObj.ProductCategoryID = salesObjMain.ProductCategoryID = SalesObj.ProductCategoryID;
+            ProductDetailObj.ProductDetailID = StockObj.ProductDetailID = salesObjMain.ProductDetailID = SalesObj.ProductDetailID;
+            salesObjMain.Rate = Convert.ToDouble(SalesObj.Rate);
+            salesObjMain.Quantity = SalesObj.Quantity;
+            salesObjMain.TotalAmount = Convert.ToDouble(SalesObj.TotalAmount);
+            salesObjMain.AmountPaid = Convert.ToDouble(SalesObj.AmountPaid);
+            salesObjMain.TotalProductCostAmount = Convert.ToDouble(SalesObj.TotalProductCostAmount);
+            Session["TransactionNo"] = salesObjMain.TransactionNo;
+            salesObjMain.HeaderDetail = SalesObj.HeaderDetail;
+            salesObjMain.CreatedBy = "admin";
+            salesObjMain.CreatedOn = DateTime.Today;
+            StockObj.ModifiedBy = salesObjMain.ModifiedBy = "admin";
+            StockObj.ModifiedOn = salesObjMain.ModifiedOn = DateTime.Today;
+            salesBs.Insert(salesObjMain);
 
-                int CurrentStockLevel = stockBs.GetStockLevelByProductDetailID(StockObj.ProductDetailID);
-                StockObj.StockLevel = CurrentStockLevel - SalesObj.Quantity;
-                stockBs.Update(StockObj);
-
-                return Json(new { transNo = salesObjMain.TransactionNo }, JsonRequestBehavior.AllowGet);
+            int CurrentStockLevel = stockBs.GetStockLevelByProductDetailID(StockObj.ProductDetailID);
+            ProductDetailObj.StockLevel = StockObj.StockLevel = CurrentStockLevel - SalesObj.Quantity;
+            stockBs.Update(StockObj);
+            productDetailBs.UpdateStcokLevel(ProductDetailObj);
+            return Json(new { transNo = salesObjMain.TransactionNo }, JsonRequestBehavior.AllowGet);
         }
 
         public string GenerateTransNo()
@@ -162,7 +163,7 @@ namespace Inventory.Web.Areas.User.Controllers
         [HttpPost]
         public ActionResult PrintReceipt(FormCollection frm)
         {
-           
+
             Session["FinalTransNo"] = frm["TransactionNo"];
             return RedirectToAction("SalesReceipt");
         }
@@ -191,14 +192,14 @@ namespace Inventory.Web.Areas.User.Controllers
                 CompanyDetailReceipt = companyDetailBs.ListAll().ToList();
                 PaymentDetailReceipt = paymentDetailBs.GetByPaymentNo(Session["FinalTransNo"].ToString()).ToList();
                 CompanyLogoReceipt = companyLogoBs.GetCompanyLogo();
-   
+
                 if (GetUserOnce == "Y")
                 {
                     foreach (var item in SalesReceipt)
                         UserReceipt = userBs.GetByUsername(item.CreatedBy);
                     GetUserOnce = "N";
                 }
-               
+
                 receipt.SalesReceipt = SalesReceipt;
                 receipt.CompanyDetailReceipt = CompanyDetailReceipt;
                 receipt.UserReceipt = UserReceipt;
