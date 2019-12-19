@@ -16,7 +16,7 @@
         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
 
         @if (ViewData["Message"] != null && ViewData["Message"].ToString() != "")
-                {
+        {
             <div class="alert alert-dismissable alert-danger" style="margin-top:3px;">
                 @ViewData["Message"]
             </div>
@@ -67,6 +67,12 @@
     </div>
 }
 
+<!-- Loader start-->
+<div class="loading" id="spinner" style="display:none">
+    <div class="loader"></div>
+</div>
+<!-- loader end -->
+
 @section Scripts {
     <script>
         $(document).ready(function () {
@@ -77,9 +83,9 @@
                     $('#ProductDetailID')
                     .append('<option value="">' + "Select" + '</option>')
                      GetProductByCategory($('#ProductCategoryID').val());
-                
+
                 }
-               
+
             });
 
             $('#ProductDetailID').change(function () {
@@ -270,7 +276,7 @@
                         var r = confirm("Are you sure you want to SAVE transaction");
                         if (r) {
 
-                          
+
                             $("#TableItem  tr").each(function (i, row) {
                                 if (i > 1) {
                                     var headerDetail = ""
@@ -398,6 +404,14 @@
                     }
                 }
             });
+
+            $(document).ajaxStart(function () {
+                $("#spinner").css("display", "block");
+            });
+
+            $(document).ajaxComplete(function () {
+                $("#spinner").css("display", "none");
+            });
         });
 
         function confirmSaveAction() {
@@ -479,7 +493,7 @@
                     console.log('ID: ' + response[i].ProductDetailID + ' Name: ' + response[i].ProductName)
                 }
 
-             
+
             }
 
             function errorFunc(error) {

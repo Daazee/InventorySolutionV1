@@ -1,7 +1,7 @@
 ﻿@model IEnumerable<Inventory.Model.Stock>
 
 @{
-    ViewBag.Title = "StockEntry";
+    ViewBag.Title = "Stock Entry";
     Layout = "~/Views/Shared/_LayoutMenu.cshtml";
 }
 
@@ -43,8 +43,8 @@
                             @Html.DropDownList("ProductDetailID", (IEnumerable<SelectListItem>)ViewBag.ProudctName, "Select", new { @class = "form-control" })
                             @*@Html.DropDownList("ProductDetailID",  "Select",  new { @class = "form-control" })*@
                             @*<select id="ProductDetailID" name="ProductDetailID" class="form-control">
-                                <option value="">Select</option>
-                            </select>*@
+                                    <option value="">Select</option>
+                                </select>*@
                         </div>
                     </div>
                     <div class="form-group">
@@ -71,7 +71,11 @@
 
 }
 
-
+<!-- Loader start-->
+<div class="loading" id="spinner" style="display:none">
+    <div class="loader"></div>
+</div>
+<!-- loader end -->
 <div class="container">
     <div class="table-responsive">
         <table class="table table-striped table-bordered table-hover">
@@ -87,7 +91,7 @@
                     <th>
                         @Html.DisplayNameFor(model => model.StockLevel)
                     </th>
-                    <th></th>
+                    @*<th></th>*@
                 </tr>
             </thead>
 
@@ -105,9 +109,9 @@
                         <td>
                             @Html.DisplayFor(modelItem => item.StockLevel)
                         </td>
-                        <td>
+                        @*<td>
                             <a href="" id="Delete" name="Delete">Delete</a>
-                        </td>
+                        </td>*@
                     </tr>
                 }
             }
@@ -192,17 +196,17 @@
                     for (var i = 0; i <= response.length - 1; i++) {
                         console.log(i)
                         $('#ProductDetailID')
-                       .append('<option value=' + response[i].ProductDetailID + '>' +
-                         response[i].ProductName + '</option>')
+                            .append('<option value=' + response[i].ProductDetailID + '>' +
+                                response[i].ProductName + '</option>')
 
                     }
 
                 }
 
-            //    function errorFunc(error) {
-            //        //alert("Error occured");//To avoid alerting if no internet connection.
-            //        console.log(error);
-            //    }
+                //    function errorFunc(error) {
+                //        //alert("Error occured");//To avoid alerting if no internet connection.
+                //        console.log(error);
+                //    }
 
             })
 
@@ -214,6 +218,15 @@
                 $('#StockLevel').val('');
 
             })
+
+
+            $(document).ajaxStart(function () {
+                $("#spinner").css("display", "block");
+            });
+
+            $(document).ajaxComplete(function () {
+                $("#spinner").css("display", "none");
+            });
         })
 
     </script>
