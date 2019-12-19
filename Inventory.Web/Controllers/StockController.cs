@@ -17,43 +17,55 @@ namespace Inventory.Web.Controllers
         private string message;
         StockBs stockBs = new StockBs();
         StockHistoryBs stockHistoryBs = new StockHistoryBs();
+        ProductDetail productDetail = new ProductDetail();
+        ProductDetailBs productDetailBs = new ProductDetailBs();
+
         [HttpPost]
         [Route("StockEntry")]
         public string PostStock(Stock StockObj)
         {
-            StockHistory StockHistoryObj = new StockHistory();
-
-            
-            StockHistoryObj.ProductCategoryID = StockObj.ProductCategoryID;
-            StockHistoryObj.ProductDetailID = StockObj.ProductDetailID;
-
-            //Get stock level before delievery
-            int CurrentStockLevel = stockBs.GetStockLevelByProductDetailID(StockObj.ProductDetailID);
-            StockHistoryObj.UnitAsAtDelievery = CurrentStockLevel;
-            StockHistoryObj.UnitReceived = StockObj.StockLevel;
-            StockObj.StockLevel += CurrentStockLevel;
-
-            StockHistoryObj.CreatedBy = StockObj.CreatedBy = "admin";
-            StockHistoryObj.CreatedOn = StockObj.CreatedOn = DateTime.Today;
-            StockHistoryObj.ModifiedOn = StockObj.ModifiedOn = DateTime.Today;
-            StockHistoryObj.ModifiedBy = StockObj.ModifiedBy = "admin";
-            
-
-            var StockExist = stockBs.GetByProductDetailID(StockObj.ProductDetailID);
-            if(StockExist ==null)
+            try
             {
-                StockHistoryObj.Flag = StockObj.Flag = "A";
-                stockBs.Insert(StockObj);
-            }
-            else
-            {
+                StockHistory StockHistoryObj = new StockHistory();
 
-                StockHistoryObj.Flag = StockObj.Flag = "C";
-                stockBs.Update(StockObj);
+
+                StockHistoryObj.ProductCategoryID = StockObj.ProductCategoryID;
+                productDetail.ProductDetailID = StockHistoryObj.ProductDetailID = StockObj.ProductDetailID;
+
+                //Get stock level before delievery
+                int CurrentStockLevel = stockBs.GetStockLevelByProductDetailID(StockObj.ProductDetailID);
+                StockHistoryObj.UnitAsAtDelievery = CurrentStockLevel;
+                StockHistoryObj.UnitReceived = StockObj.StockLevel;
+                productDetail.StockLevel = StockObj.StockLevel += CurrentStockLevel;
+
+                StockHistoryObj.CreatedBy = StockObj.CreatedBy = "admin";
+                StockHistoryObj.CreatedOn = StockObj.CreatedOn = DateTime.Today;
+                StockHistoryObj.ModifiedOn = StockObj.ModifiedOn = DateTime.Today;
+                StockHistoryObj.ModifiedBy = StockObj.ModifiedBy = "admin";
+
+
+                var StockExist = stockBs.GetByProductDetailID(StockObj.ProductDetailID);
+                if (StockExist == null)
+                {
+                    StockHistoryObj.Flag = StockObj.Flag = "A";
+                    stockBs.Insert(StockObj);
+                }
+                else
+                {
+
+                    StockHistoryObj.Flag = StockObj.Flag = "C";
+                    stockBs.Update(StockObj);
+                }
+
+                stockHistoryBs.Insert(StockHistoryObj);
+                productDetailBs.UpdateStcokLevel(productDetail);
+                message = "Stock updated successfully";
             }
-            
-            stockHistoryBs.Insert(StockHistoryObj);
-            message = "Stock updated successfully";
+            catch (Exception ex)
+            {
+                message = "Error occurred when trying to save this record"; 
+               
+            }
             return message;
         }
 
