@@ -1,6 +1,6 @@
 ﻿@model Inventory.Model.Receipt
 @{
-    ViewBag.Title = "SalesReceipt";
+    ViewBag.Title = "Sales Receipt";
     Layout = "~/Views/Shared/_LayoutMenu.cshtml";
 }
 <style>
@@ -133,11 +133,13 @@
                 <input type="text" value="@Model.SalesReceipt.First().TransactionNo" id="TransactionNo" style="display:none" />
             </td>
             <td align="right">
-                <input type="submit" id="PrintReceipt" value="Print Receipt" class="btn-primary" style="width:100px" />
+                <input type="submit" id="PrintReceipt" value="Print Receipt" class="btn-primary" style="width:130px" />
             </td>
         </tr>
     </table>
 </form>
+
+
 
 @section Scripts{
     <script>
