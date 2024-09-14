@@ -18,3 +18,7 @@ artifacts/
 _ReSharper.*
 /.vs
 *.Web.config
+/Inventory.BLL/.vs/Inventory.BLL.csproj.dtbcache.json
+/Inventory.Web/.vs/Inventory.Web.csproj.dtbcache.json
+/Inventory.DAL/.vs/Inventory.DAL.csproj.dtbcache.json
+/Inventory.Model/.vs/Inventory.Model.csproj.dtbcache.json
