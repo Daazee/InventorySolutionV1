@@ -144,9 +144,16 @@
                             <span class="user-name">
                                 @try
                                 {
-                                    <span class="hidden-xs">
+                                <span class="hidden-xs">
+                                    @if (@Session["Username"] != null)
+                                    {
                                         @Session["Username"].ToString() <i class="fa fa-angle-down"></i>
-                                    </span>
+                                    }
+                                    else
+                                    {
+                                        @Html.Action("Login", new { Controller = "Access", Area = "Security" });
+                                    }
+                                </span>
                                 }
                                 catch (Exception ex)
                                 {
